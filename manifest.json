@@ -1,8 +1,9 @@
 {
-  "name": "Web-Slinger · Weekly Planner",
+  "name": "Web-Slinger · Tracker",
   "short_name": "Web-Slinger",
-  "description": "Spider-Man themed calisthenics weekly planner — no equipment needed.",
-  "start_url": "/",
+  "description": "Workouts, quests, tasks, focus mode, and a stat sheet that tracks every category of growth.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#07060a",
@@ -10,16 +11,28 @@
   "lang": "en",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

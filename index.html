@@ -1846,6 +1846,122 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
   letter-spacing: 0.5px;
 }
 
+.stat-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 0.9rem 0.2rem 0.5rem;
+  color: var(--text);
+}
+.stat-section-title .bar {
+  display: block;
+  width: 30px; height: 3px;
+  border-radius: 2px;
+}
+
+/* Meta-group container (Physical / Mental / Lifestyle / Mastery) */
+.meta-group {
+  margin: 1rem 0 0.5rem;
+}
+.meta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.45rem;
+  padding: 0 0.2rem;
+}
+.meta-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.meta-bar { display: block; width: 30px; height: 3px; border-radius: 2px; }
+.meta-power { display: flex; align-items: baseline; gap: 0.5rem; }
+.meta-power-num {
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.meta-power-tier {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.meta-bar-track {
+  height: 5px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  margin: 0 0.2rem 0.55rem;
+  overflow: hidden;
+}
+.meta-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease-out;
+}
+
+/* Home meta-row (4 meta-categories preview) */
+.home-meta-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+.home-meta-cell {
+  text-align: center;
+  background: var(--bg-elevated);
+  padding: 0.55rem 0.25rem;
+  border-radius: 9px;
+}
+.home-meta-ic { font-size: 1.05rem; margin-bottom: 0.1rem; }
+.home-meta-num {
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.home-meta-name {
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-top: 0.25rem;
+}
+.home-meta-tier {
+  font-size: 0.5rem;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 0.15rem;
+}
+
+/* Floating +1 stat gain toast */
+.stat-gain {
+  position: fixed;
+  font-weight: 900;
+  font-size: 1.1rem;
+  pointer-events: none;
+  z-index: 1700;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.7), 0 0 4px rgba(0,0,0,0.5);
+  letter-spacing: 1px;
+  animation: statFloat 1.6s ease-out forwards;
+  white-space: nowrap;
+}
+@keyframes statFloat {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.85); }
+  15%  { opacity: 1; transform: translateY(0) scale(1.1); }
+  30%  { transform: translateY(-8px) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(0.95); }
+}
+
 /* Compact stat preview on Home */
 .home-stats-card {
   background: var(--bg-card);
@@ -1882,6 +1998,7 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
   grid-template-columns: repeat(6, 1fr);
   gap: 0.35rem;
 }
+.home-stats-row.five { grid-template-columns: repeat(5, 1fr); }
 .home-stat-mini {
   text-align: center;
   padding: 0.45rem 0.2rem;
@@ -2161,7 +2278,7 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
     <span class="nav-icon">◷</span><span class="nav-label">Schedule</span>
   </button>
   <button class="nav-btn" data-tab="habits" onclick="switchTab('habits')">
-    <span class="nav-icon">◐</span><span class="nav-label">Habits</span>
+    <span class="nav-icon">◐</span><span class="nav-label">Quests</span>
   </button>
   <button class="nav-btn" data-tab="analytics" onclick="switchTab('analytics')">
     <span class="nav-icon">◈</span><span class="nav-label">Analytics</span>
@@ -2404,9 +2521,11 @@ let state = {
   log: [],          // workout completion log
   tasks: [],        // schedule tasks
   habits: [],       // habit definitions
-  intention: null,  // { date, text }
+  intention: null,  // { date, text } — today's intention
+  intentionHistory: [], // [{date, text}] for Reflection stat
   focusSessions: [],// { ts, taskId, duration, completed }
   settings: {
+    userName: '',
     notifications: false,
     defaultFocusMin: 25,
     drive: { clientId: '', signedIn: false, lastSync: 0, autoSync: true }
@@ -2428,6 +2547,30 @@ const CAT_COLORS = {
   CORE: '#f0b62b', SKILL: '#9b59d6', PLYO: '#ff7a2a'
 };
 const CAT_ICONS = { PUSH: '◤', PULL: '◢', LEGS: '◣', CORE: '◆', SKILL: '✦', PLYO: '⚡' };
+const PHYSICAL_STATS  = ['PUSH', 'PULL', 'LEGS', 'CORE', 'SKILL', 'PLYO'];
+const MENTAL_STATS    = ['FOCUS', 'CLARITY', 'DISCIPLINE', 'RESILIENCE'];
+const LIFESTYLE_STATS = ['RECOVERY', 'BALANCE'];
+const MASTERY_STATS   = ['KNOWLEDGE', 'CURIOSITY', 'REFLECTION'];
+const ALL_STATS = [...PHYSICAL_STATS, ...MENTAL_STATS, ...LIFESTYLE_STATS, ...MASTERY_STATS];
+const STAT_COLORS = {
+  PUSH: '#e62429', PULL: '#2a5cd9', LEGS: '#1da57a',
+  CORE: '#f0b62b', SKILL: '#9b59d6', PLYO: '#ff7a2a',
+  FOCUS: '#00d4ff', CLARITY: '#b478e8', DISCIPLINE: '#2cd6a4', RESILIENCE: '#ff9a3c',
+  RECOVERY: '#7ddc7d', BALANCE: '#26c6da',
+  KNOWLEDGE: '#7986cb', CURIOSITY: '#ec407a', REFLECTION: '#ce93d8'
+};
+const STAT_ICONS = {
+  PUSH: '◤', PULL: '◢', LEGS: '◣', CORE: '◆', SKILL: '✦', PLYO: '⚡',
+  FOCUS: '◉', CLARITY: '◇', DISCIPLINE: '◷', RESILIENCE: '↺',
+  RECOVERY: '☾', BALANCE: '⚖',
+  KNOWLEDGE: '✎', CURIOSITY: '◌', REFLECTION: '✧'
+};
+const META_GROUPS = [
+  { id: 'physical',  name: 'PHYSICAL',  icon: '⚔',  stats: PHYSICAL_STATS,  bar: 'linear-gradient(90deg,#e62429,#ff7a2a)' },
+  { id: 'mental',    name: 'MENTAL',    icon: '🧠', stats: MENTAL_STATS,    bar: 'linear-gradient(90deg,#00d4ff,#b478e8)' },
+  { id: 'lifestyle', name: 'LIFESTYLE', icon: '🌿', stats: LIFESTYLE_STATS, bar: 'linear-gradient(90deg,#7ddc7d,#26c6da)' },
+  { id: 'mastery',   name: 'MASTERY',   icon: '🎓', stats: MASTERY_STATS,   bar: 'linear-gradient(90deg,#7986cb,#ec407a)' }
+];
 const STAT_TIERS = [
   { name: 'Civilian',     min: 0    },
   { name: 'Trainee',      min: 10   },
@@ -2469,9 +2612,11 @@ function loadState() {
       if (!parsed.tasks) parsed.tasks = [];
       if (!parsed.habits) parsed.habits = [];
       if (!parsed.intention) parsed.intention = null;
+      if (!parsed.intentionHistory) parsed.intentionHistory = [];
       if (!parsed.focusSessions) parsed.focusSessions = [];
-      if (!parsed.settings) parsed.settings = { notifications: false, defaultFocusMin: 25, drive: { clientId: '', signedIn: false, lastSync: 0, autoSync: true } };
+      if (!parsed.settings) parsed.settings = { userName: '', notifications: false, defaultFocusMin: 25, drive: { clientId: '', signedIn: false, lastSync: 0, autoSync: true } };
       if (!parsed.settings.drive) parsed.settings.drive = { clientId: '', signedIn: false, lastSync: 0, autoSync: true };
+      if (parsed.settings.userName === undefined) parsed.settings.userName = '';
       if (!parsed.ui) parsed.ui = { tab: 'workouts', scheduleView: 'list', calMonth: null };
       if (!parsed.ui.scheduleView) parsed.ui.scheduleView = 'list';
       // Backfill subtasks on existing tasks
@@ -2489,6 +2634,32 @@ function findExercise(poolId, exerciseId) {
 
 function newId() {
   return 'ex_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// Floating stat gain toast. gains = { PUSH: 2, FOCUS: 1, ... }
+function showStatGains(gains, anchor) {
+  const entries = Object.entries(gains).filter(([, v]) => v > 0);
+  if (entries.length === 0) return;
+  let baseX, baseY;
+  if (anchor && anchor.getBoundingClientRect) {
+    const r = anchor.getBoundingClientRect();
+    baseX = r.left + r.width / 2;
+    baseY = r.top;
+  } else {
+    baseX = window.innerWidth / 2;
+    baseY = window.innerHeight / 2;
+  }
+  entries.forEach(([stat, v], i) => {
+    const el = document.createElement('div');
+    el.className = 'stat-gain';
+    el.style.color = STAT_COLORS[stat] || '#ececf2';
+    el.style.left = (baseX - 30 + (i % 3) * 20) + 'px';
+    el.style.top = (baseY - 10 - Math.floor(i / 3) * 22) + 'px';
+    el.style.animationDelay = (i * 0.08) + 's';
+    el.textContent = `+${v} ${stat}`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1800 + i * 100);
+  });
 }
 
 function showToast(msg) {
@@ -2978,6 +3149,7 @@ function confirmReset() {
       pools: defaultPools(), week: defaultWeek(), log: [],
       tasks: [], habits: [], intention: null, focusSessions: [],
       settings: {
+    userName: '',
     notifications: false,
     defaultFocusMin: 25,
     drive: { clientId: '', signedIn: false, lastSync: 0, autoSync: true }
@@ -3076,6 +3248,8 @@ function logWorkout(dayIdx) {
   render();
   const summary = categories.filter(c => cats[c] > 0).map(c => `${c}×${cats[c]}`).join(' · ');
   showToast('Logged: ' + summary);
+  // Floating stat gains
+  showStatGains(cats);
 }
 
 // ====== SCHEDULE / TASKS ======
@@ -3289,18 +3463,31 @@ function deleteTask() {
 function toggleTaskDone(id) {
   const task = state.tasks.find(t => t.id === id);
   if (!task) return;
+  let nowCompleted = false;
   if (task.recurring) {
     task.completionsByDate = task.completionsByDate || {};
     const today = todayDate();
     if (task.completionsByDate[today]) delete task.completionsByDate[today];
-    else task.completionsByDate[today] = Date.now();
+    else { task.completionsByDate[today] = Date.now(); nowCompleted = true; }
   } else {
     task.completed = !task.completed;
     task.completedAt = task.completed ? Date.now() : null;
+    nowCompleted = task.completed;
   }
   saveState();
   renderSchedule();
   renderHome();
+  if (nowCompleted) {
+    const gains = { CLARITY: 1 };
+    // On-time bonus for non-recurring
+    if (!task.recurring && task.dueDate) {
+      const doneDate = new Date(task.completedAt).toISOString().slice(0,10);
+      if (doneDate <= task.dueDate) gains.DISCIPLINE = 1;
+    } else if (task.recurring) {
+      gains.DISCIPLINE = 1; // recurring is always "on time"
+    }
+    showStatGains(gains);
+  }
 }
 
 function renderSchedule() {
@@ -3498,7 +3685,7 @@ function openHabitForm(habitId) {
 function renderHabitForm() {
   const isEdit = !!modalContext.editingId;
   const d = modalContext.draft;
-  document.getElementById('modal-title').textContent = isEdit ? 'EDIT HABIT' : 'NEW HABIT';
+  document.getElementById('modal-title').textContent = isEdit ? 'EDIT QUEST' : 'NEW QUEST';
   const icons = ['◐','★','✦','◈','◆','♪','☀','✎','✿','♥'];
   document.getElementById('modal-body').innerHTML = `
     <div class="form-field">
@@ -3550,13 +3737,14 @@ function saveHabit() {
   if (modalContext.editingId) {
     const idx = state.habits.findIndex(h => h.id === modalContext.editingId);
     if (idx >= 0) state.habits[idx] = { ...state.habits[idx], ...d };
-    showToast('Habit updated');
+    showToast('Quest updated');
   } else {
     d.id = 'habit_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
     d.createdAt = Date.now();
     d.history = [];
     state.habits.push(d);
-    showToast('Habit added');
+    showToast('Quest added');
+    showStatGains({ CURIOSITY: 1 });
   }
   saveState();
   closeModal();
@@ -3565,13 +3753,13 @@ function saveHabit() {
 }
 
 function deleteHabit() {
-  if (!confirm('Delete this habit and all its history?')) return;
+  if (!confirm('Delete this quest and all its history?')) return;
   state.habits = state.habits.filter(h => h.id !== modalContext.editingId);
   saveState();
   closeModal();
   renderHabits();
   renderHome();
-  showToast('Habit deleted');
+  showToast('Quest deleted');
 }
 
 function toggleHabit(id) {
@@ -3579,11 +3767,26 @@ function toggleHabit(id) {
   const today = todayDate();
   h.history = h.history || [];
   const i = h.history.indexOf(today);
+  let nowCompleted = false;
   if (i >= 0) h.history.splice(i, 1);
-  else h.history.push(today);
+  else { h.history.push(today); nowCompleted = true; }
   saveState();
   renderHabits();
   renderHome();
+  if (nowCompleted) {
+    const gains = { FOCUS: 1 };
+    // Check if completing today crossed a 7-day streak milestone
+    const newStreak = habitStreak(h);
+    if (newStreak > 0 && newStreak % 7 === 0) gains.DISCIPLINE = 1;
+    // Resilience: completing after a gap of ≥ 2 days from previous entry
+    const prevDates = h.history.filter(d => d < today).sort();
+    if (prevDates.length > 0) {
+      const lastDate = prevDates[prevDates.length - 1];
+      const gap = (new Date(today) - new Date(lastDate)) / 86400000;
+      if (gap >= 2) gains.RESILIENCE = 1;
+    }
+    showStatGains(gains);
+  }
 }
 
 function habitStreak(h) {
@@ -3604,13 +3807,13 @@ function renderHabits() {
   view.innerHTML = `
     <div class="section-header">
       <div>
-        <div class="section-title">Habits</div>
-        <div class="section-sub">Build consistency</div>
+        <div class="section-title">Quests</div>
+        <div class="section-sub">Daily quests · Build your saga</div>
       </div>
-      <button class="section-action" style="background:#ff9a3c" onclick="openHabitForm()">+ New Habit</button>
+      <button class="section-action" style="background:#ff9a3c" onclick="openHabitForm()">+ New Quest</button>
     </div>
     ${habits.length === 0
-      ? `<div class="empty-row" style="padding:3rem 0">No habits yet.<br>Tap <strong style="color:#ff9a3c">+ New Habit</strong> to start tracking.</div>`
+      ? `<div class="empty-row" style="padding:3rem 0">No quests yet.<br>Tap <strong style="color:#ff9a3c">+ New Quest</strong> to start your saga.</div>`
       : habits.map(habitRowHTML).join('')}
   `;
 }
@@ -3639,7 +3842,15 @@ function setIntention() {
   const text = prompt('What\'s your main goal for today?', state.intention?.text || '');
   if (text === null) return;
   if (text.trim() === '') { state.intention = null; }
-  else { state.intention = { date: todayDate(), text: text.trim() }; }
+  else {
+    const today = todayDate();
+    state.intention = { date: today, text: text.trim() };
+    // Add to reflection history (one per day, replace if exists)
+    state.intentionHistory = state.intentionHistory || [];
+    const existingIdx = state.intentionHistory.findIndex(i => i.date === today);
+    if (existingIdx >= 0) state.intentionHistory[existingIdx] = state.intention;
+    else { state.intentionHistory.push(state.intention); showStatGains({ REFLECTION: 1 }); }
+  }
   saveState();
   renderHome();
 }
@@ -3687,7 +3898,7 @@ function renderHome() {
 
   view.innerHTML = `
     <div class="home-greeting">
-      <h1>${greeting()}, you 🕸</h1>
+      <h1>${greeting()}, ${escapeHtml(state.settings.userName || 'you')} 🕸</h1>
       <div class="date">${prettyToday()}</div>
     </div>
 
@@ -3729,7 +3940,7 @@ function renderHome() {
         <div class="stat-pill red">!</div>
       </div>
       <div class="stat-card">
-        <div><div class="v">${habitsDoneToday}/${habits.length}</div><div class="l">Habits</div></div>
+        <div><div class="v">${habitsDoneToday}/${habits.length}</div><div class="l">Quests</div></div>
         <div class="stat-pill orange">◐</div>
       </div>
     </div>
@@ -3746,11 +3957,11 @@ function renderHome() {
 
     <div class="list-card">
       <div class="list-card-header">
-        <span class="list-card-title">Today's Habits</span>
+        <span class="list-card-title">Today's Quests</span>
         <button class="list-card-link" onclick="switchTab('habits')" style="color:#ff9a3c">View All →</button>
       </div>
       ${habits.length === 0
-        ? `<div class="empty-row">No habits yet — start tracking on the Habits tab.</div>`
+        ? `<div class="empty-row">No quests yet — head to the Quests tab to start one.</div>`
         : habits.slice(0, 4).map(habitRowHTML).join('')}
     </div>
   `;
@@ -3814,10 +4025,10 @@ function renderAnalytics() {
 
     <div class="chart-card">
       <div class="chart-card-header">
-        <span class="chart-card-title">Habit Performance · Last 30 days</span>
+        <span class="chart-card-title">Quest Performance · Last 30 days</span>
       </div>
       ${habits.length === 0
-        ? `<div class="empty-row" style="padding:2rem 0">Add habits to track performance here.</div>`
+        ? `<div class="empty-row" style="padding:2rem 0">Add quests to track performance here.</div>`
         : habits.map(h => {
             const last30 = Array.from({length: 30}).map((_, i) => daysAgoDate(29 - i));
             const hits = last30.filter(d => (h.history || []).includes(d)).length;
@@ -3854,11 +4065,11 @@ function renderAnalytics() {
           <div class="stat-pill green">✓</div>
         </div>
         <div class="stat-card">
-          <div><div class="v">${habits.length}</div><div class="l">Total Habits</div></div>
+          <div><div class="v">${habits.length}</div><div class="l">Total Quests</div></div>
           <div class="stat-pill orange">◐</div>
         </div>
         <div class="stat-card">
-          <div><div class="v">${totalHabitCompletions}</div><div class="l">Habit Completions</div></div>
+          <div><div class="v">${totalHabitCompletions}</div><div class="l">Quest Completions</div></div>
           <div class="stat-pill purple">↻</div>
         </div>
       </div>
@@ -4218,6 +4429,7 @@ function finishFocus(autoEnd = false) {
     state.focusSessions.push({ ts: Date.now(), taskId: focusTaskId, duration: durMin, completed: autoEnd });
     saveState();
     if (!autoEnd) showToast(`Focus session saved (${durMin}m)`);
+    if (durMin >= 15) showStatGains({ FOCUS: 1 });
   }
   document.getElementById('focus-overlay').classList.remove('open');
   if (state.ui.tab === 'analytics') renderAnalytics();
@@ -4238,6 +4450,17 @@ function openSettings() {
   const notifGranted = ('Notification' in window) && Notification.permission === 'granted';
   const notifBlocked = ('Notification' in window) && Notification.permission === 'denied';
   document.getElementById('modal-body').innerHTML = `
+    <div class="settings-section">
+      <h3>Profile</h3>
+      <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:0.4rem">
+        <div class="label">Your name</div>
+        <input type="text" id="set-username" placeholder="e.g. Peter" value="${escapeHtml(state.settings.userName || '')}" maxlength="32"
+          style="width:100%;padding:0.55rem 0.7rem;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:0.85rem;font-family:inherit"
+          oninput="saveUserName(this.value)">
+        <div class="sub">Shown in the Home greeting</div>
+      </div>
+    </div>
+
     <div class="settings-section">
       <h3>Data</h3>
       <div class="settings-row">
@@ -4292,6 +4515,16 @@ function openSettings() {
 function setDefaultFocus(v) {
   state.settings.defaultFocusMin = parseInt(v) || 25;
   saveState();
+}
+
+let _nameSaveTimer = null;
+function saveUserName(v) {
+  state.settings.userName = (v || '').slice(0, 32);
+  if (_nameSaveTimer) clearTimeout(_nameSaveTimer);
+  _nameSaveTimer = setTimeout(() => {
+    saveState();
+    renderHome();
+  }, 400);
 }
 
 // ====== NOTIFICATIONS ======
@@ -4357,13 +4590,109 @@ function checkReminders() {
 }
 
 // ====== STAT POINT SYSTEM ======
-// One stat point per exercise per logged session, per its category.
+// 10 stats total: 6 physical (auto from workouts) + 4 mental (auto from quests/tasks/focus).
 function computeStatPoints() {
   const pts = {};
-  categories.forEach(c => pts[c] = 0);
+  ALL_STATS.forEach(c => pts[c] = 0);
+
+  // PHYSICAL — 1 per exercise per logged workout
   (state.log || []).forEach(entry => {
-    categories.forEach(c => { pts[c] += entry.cats[c] || 0; });
+    PHYSICAL_STATS.forEach(c => { pts[c] += entry.cats[c] || 0; });
   });
+
+  // FOCUS — +1 per quest completion, +1 per focus session ≥ 15 min
+  (state.habits || []).forEach(h => { pts.FOCUS += (h.history || []).length; });
+  (state.focusSessions || []).forEach(s => { if ((s.duration || 0) >= 15) pts.FOCUS += 1; });
+
+  // CLARITY — +1 per task completion (counts recurring completions too)
+  (state.tasks || []).forEach(t => {
+    if (t.recurring) {
+      pts.CLARITY += Object.keys(t.completionsByDate || {}).length;
+    } else if (t.completed) {
+      pts.CLARITY += 1;
+    }
+  });
+
+  // DISCIPLINE — +1 per on-time task completion, +1 per 7-day quest streak milestone
+  (state.tasks || []).forEach(t => {
+    if (t.recurring) {
+      pts.DISCIPLINE += Object.keys(t.completionsByDate || {}).length;
+    } else if (t.completed && t.completedAt && t.dueDate) {
+      const doneDate = new Date(t.completedAt).toISOString().slice(0,10);
+      if (doneDate <= t.dueDate) pts.DISCIPLINE += 1;
+    }
+  });
+  (state.habits || []).forEach(h => {
+    pts.DISCIPLINE += Math.floor(habitStreak(h) / 7);
+  });
+
+  // RESILIENCE — +1 per quest "comeback" (logged after a gap of ≥ 2 days)
+  (state.habits || []).forEach(h => {
+    const hist = (h.history || []).slice().sort();
+    let prev = null;
+    hist.forEach(d => {
+      if (prev) {
+        const gap = (new Date(d) - new Date(prev)) / 86400000;
+        if (gap >= 2) pts.RESILIENCE += 1;
+      }
+      prev = d;
+    });
+  });
+
+  // ===== LIFESTYLE =====
+
+  // Gather all activity dates and which stat categories they touched
+  const dateActivities = {};
+  const addAct = (date, stat) => {
+    dateActivities[date] = dateActivities[date] || new Set();
+    dateActivities[date].add(stat);
+  };
+  (state.log || []).forEach(e => PHYSICAL_STATS.forEach(c => { if (e.cats[c]) addAct(e.date, c); }));
+  (state.habits || []).forEach(h => (h.history || []).forEach(d => addAct(d, 'FOCUS')));
+  (state.tasks || []).forEach(t => {
+    if (t.recurring) Object.keys(t.completionsByDate || {}).forEach(d => addAct(d, 'CLARITY'));
+    else if (t.completed && t.completedAt) addAct(new Date(t.completedAt).toISOString().slice(0,10), 'CLARITY');
+  });
+  (state.focusSessions || []).forEach(s => { if ((s.duration || 0) >= 15) addAct(new Date(s.ts).toISOString().slice(0,10), 'FOCUS'); });
+
+  // RECOVERY — +1 per planned rest day that you also did at least 1 task/quest on
+  Object.keys(dateActivities).forEach(date => {
+    const dow = new Date(date + 'T00:00:00').getDay();
+    const dayName = WEEKDAY_FULL[dow];
+    const day = state.week.find(d => d.day === dayName);
+    if (day?.rest) {
+      // Did they do something non-workout?
+      const acts = dateActivities[date];
+      if ([...acts].some(a => !PHYSICAL_STATS.includes(a))) pts.RECOVERY += 1;
+    }
+  });
+
+  // BALANCE — +1 per day with activities touching 3+ distinct stat sub-categories
+  Object.values(dateActivities).forEach(set => { if (set.size >= 3) pts.BALANCE += 1; });
+
+  // ===== MASTERY =====
+
+  // KNOWLEDGE — +1 per completed task that had at least one done subtask (deep work)
+  (state.tasks || []).forEach(t => {
+    const doneSubs = (t.subtasks || []).filter(s => s.done).length;
+    if (doneSubs === 0) return;
+    if (t.recurring) {
+      pts.KNOWLEDGE += Object.keys(t.completionsByDate || {}).length;
+    } else if (t.completed) {
+      pts.KNOWLEDGE += 1;
+    }
+  });
+
+  // CURIOSITY — +1 per quest created + 1 per 3 unique exercises in your week plan (trying new things)
+  pts.CURIOSITY += (state.habits || []).length;
+  const uniqueEx = new Set();
+  state.week.forEach(d => { if (d.slots) d.slots.forEach(s => uniqueEx.add(s.poolId + '/' + s.exerciseId)); });
+  pts.CURIOSITY += Math.floor(uniqueEx.size / 3);
+
+  // REFLECTION — +1 per unique day an intention was set
+  const reflDays = new Set((state.intentionHistory || []).map(i => i.date));
+  pts.REFLECTION += reflDays.size;
+
   return pts;
 }
 
@@ -4382,24 +4711,44 @@ function statTierFor(points) {
   return { tier, level: idx + 1, next, progress, toNext, maxed: !next };
 }
 
+function statCardHTML(c, pts) {
+  const p = pts[c];
+  const t = statTierFor(p);
+  const fillWidth = Math.round(t.progress * 100);
+  return `
+    <div class="stat-cat-card" style="--cat-color:${STAT_COLORS[c]}">
+      <div class="stat-cat-head">
+        <div class="stat-cat-name"><span class="ic">${STAT_ICONS[c]}</span>${c}</div>
+        <div class="stat-cat-lv">Lv ${t.level} · ${t.tier.name}</div>
+      </div>
+      <div class="stat-cat-points">${p}<span class="pts">pts</span></div>
+      <div class="stat-cat-bar"><div class="stat-cat-bar-fill ${t.maxed ? 'maxed' : ''}" style="width:${fillWidth}%"></div></div>
+      <div class="stat-cat-next">${t.maxed ? 'MAX TIER · ' + t.tier.name + ' ★' : t.toNext + ' to ' + t.next.name}</div>
+    </div>
+  `;
+}
+
 function renderStatSheetHTML() {
   const pts = computeStatPoints();
   const total = Object.values(pts).reduce((a, b) => a + b, 0);
   const totalTier = statTierFor(total);
 
-  const cards = categories.map(c => {
-    const p = pts[c];
-    const t = statTierFor(p);
-    const fillWidth = Math.round(t.progress * 100);
+  // Each meta group has its own subtotal + tier
+  const groupHTML = META_GROUPS.map(g => {
+    const subtotal = g.stats.reduce((sum, s) => sum + (pts[s] || 0), 0);
+    const t = statTierFor(subtotal);
+    const fill = Math.round(t.progress * 100);
     return `
-      <div class="stat-cat-card" style="--cat-color:${CAT_COLORS[c]}">
-        <div class="stat-cat-head">
-          <div class="stat-cat-name"><span class="ic">${CAT_ICONS[c]}</span>${c}</div>
-          <div class="stat-cat-lv">Lv ${t.level} · ${t.tier.name}</div>
+      <div class="meta-group">
+        <div class="meta-header">
+          <div class="meta-title"><span class="meta-bar" style="background:${g.bar}"></span>${g.icon} ${g.name}</div>
+          <div class="meta-power">
+            <span class="meta-power-num">${subtotal}</span>
+            <span class="meta-power-tier">${t.tier.name} · Lv ${t.level}</span>
+          </div>
         </div>
-        <div class="stat-cat-points">${p}<span class="pts">pts</span></div>
-        <div class="stat-cat-bar"><div class="stat-cat-bar-fill ${t.maxed ? 'maxed' : ''}" style="width:${fillWidth}%"></div></div>
-        <div class="stat-cat-next">${t.maxed ? 'MAX TIER · ' + t.tier.name + ' ★' : t.toNext + ' to ' + t.next.name}</div>
+        <div class="meta-bar-track"><div class="meta-bar-fill" style="width:${fill}%;background:${g.bar}"></div></div>
+        <div class="stat-grid-2">${g.stats.map(c => statCardHTML(c, pts)).join('')}</div>
       </div>
     `;
   }).join('');
@@ -4408,7 +4757,7 @@ function renderStatSheetHTML() {
     <div class="stat-sheet-total">
       <div>
         <div class="stat-power-num">${total}</div>
-        <div class="stat-power-tier">Power · <strong>${totalTier.tier.name}</strong> · Lv ${totalTier.level}</div>
+        <div class="stat-power-tier">Total Power · <strong>${totalTier.tier.name}</strong> · Lv ${totalTier.level}</div>
       </div>
       <div style="text-align:right">
         <div style="font-size:0.65rem;font-weight:800;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase">${totalTier.maxed ? 'MAX TIER ★' : totalTier.toNext + ' to ' + totalTier.next.name}</div>
@@ -4417,25 +4766,32 @@ function renderStatSheetHTML() {
         </div>
       </div>
     </div>
-    <div class="stat-grid-2">${cards}</div>
+    ${groupHTML}
   `;
 }
 
 function homeStatPreviewHTML() {
   const pts = computeStatPoints();
+  // Show only group power subtotals on Home (compact). Full detail on Analytics.
   return `
     <div class="home-stats-card">
       <div class="home-stats-head">
         <span class="home-stats-title">⚔ Stat Sheet</span>
         <button class="home-stats-link" onclick="switchTab('analytics')">View All →</button>
       </div>
-      <div class="home-stats-row">
-        ${categories.map(c => `
-          <div class="home-stat-mini" style="--cat-color:${CAT_COLORS[c]}">
-            <div class="v">${pts[c]}</div>
-            <div class="l">${c}</div>
-          </div>
-        `).join('')}
+      <div class="home-meta-row">
+        ${META_GROUPS.map(g => {
+          const subtotal = g.stats.reduce((s, x) => s + (pts[x] || 0), 0);
+          const t = statTierFor(subtotal);
+          return `
+            <div class="home-meta-cell">
+              <div class="home-meta-ic">${g.icon}</div>
+              <div class="home-meta-num">${subtotal}</div>
+              <div class="home-meta-name" style="background:${g.bar};-webkit-background-clip:text;background-clip:text;color:transparent">${g.name}</div>
+              <div class="home-meta-tier">${t.tier.name}</div>
+            </div>
+          `;
+        }).join('')}
       </div>
     </div>
   `;
@@ -4747,7 +5103,7 @@ window.addEventListener('beforeunload', () => {
 // ====== PWA — Service Worker + Install Prompt ======
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
 }
 

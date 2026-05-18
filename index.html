@@ -72,10 +72,31 @@ body.tab-habits {
     radial-gradient(circle at 20% 10%, rgba(255, 122, 42, 0.10) 0%, transparent 40%),
     radial-gradient(circle at 80% 90%, rgba(240, 182, 43, 0.08) 0%, transparent 40%);
 }
+/* Per-quest-view background shifts (only apply on Quests tab) */
+body.tab-habits.qv-daily {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255, 122, 42, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(255, 91, 96, 0.10) 0%, transparent 40%);
+}
+body.tab-habits.qv-side {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(0, 212, 255, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(74, 158, 255, 0.10) 0%, transparent 40%);
+}
+body.tab-habits.qv-main {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(230, 36, 41, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(155, 89, 214, 0.12) 0%, transparent 40%);
+}
 body.tab-analytics {
   background-image:
     radial-gradient(circle at 20% 10%, rgba(29, 165, 122, 0.10) 0%, transparent 40%),
     radial-gradient(circle at 80% 90%, rgba(155, 89, 214, 0.10) 0%, transparent 40%);
+}
+body.tab-goals {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255, 215, 0, 0.10) 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(255, 122, 42, 0.08) 0%, transparent 40%);
 }
 
 body::before {
@@ -903,7 +924,7 @@ body::before {
   background: none;
   border: none;
   color: var(--text-dim);
-  padding: 0.45rem 0.2rem;
+  padding: 0.45rem 0.1rem;
   font-family: inherit;
   cursor: pointer;
   display: flex;
@@ -954,6 +975,7 @@ body.tab-home .nav-btn.active     { color: #00d4ff; }
 body.tab-workouts .nav-btn.active { color: var(--red); }
 body.tab-schedule .nav-btn.active { color: #b478e8; }
 body.tab-habits .nav-btn.active   { color: #ff9a3c; }
+body.tab-goals .nav-btn.active    { color: #ffd700; }
 body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
 
 /* ===== SECTION HEADER (used in Home, Schedule, Habits, Analytics) ===== */
@@ -1452,6 +1474,7 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
 .theme-workouts { --accent: var(--red); }
 .theme-schedule { --accent: #b478e8; }
 .theme-habits   { --accent: #ff9a3c; }
+.theme-goals    { --accent: #ffd700; }
 .theme-analytics{ --accent: #2cd6a4; }
 
 /* ===== GLOBAL FAB BUTTONS (settings + focus) ===== */
@@ -1586,12 +1609,79 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
   background: var(--accent, var(--red));
   color: white;
 }
+.vt-count {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.55rem;
+  opacity: 0.8;
+  font-family: 'Orbitron', monospace;
+}
 
-.calendar-card {
+/* Quest view toggle — color-coded buttons */
+.view-toggle-qv .qv-btn {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.3rem;
+}
+.qv-ic { font-size: 0.95rem; line-height: 1; }
+.qv-lbl { font-weight: 800; }
+.view-toggle-qv .qv-daily-btn.active { background: #ff9a3c; color: #1a0e00; }
+.view-toggle-qv .qv-side-btn.active  { background: #00d4ff; color: #001620; }
+.view-toggle-qv .qv-main-btn.active  { background: #e62429; color: #fff; box-shadow: 0 0 14px rgba(230, 36, 41, 0.5); }
+
+.calendar-card,
+.cal-week-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 0.7rem;
+}
+
+.cal-week-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+}
+.cal-week-day {
+  background: var(--bg-elevated);
+  border-radius: 9px;
+  padding: 0.55rem 0.6rem 0.7rem;
+  border-left: 3px solid var(--border);
+}
+.cal-week-day.today {
+  border-left-color: var(--accent, var(--red));
+  background: rgba(180, 120, 232, 0.08);
+  box-shadow: 0 0 0 1px var(--accent, var(--red));
+}
+.cal-week-day.past { opacity: 0.55; }
+.cal-week-day-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+  padding: 0 0.1rem;
+}
+.cal-week-day-name {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  font-family: 'Orbitron', sans-serif;
+}
+.cal-week-day.today .cal-week-day-name { color: var(--accent, var(--red)); text-shadow: 0 0 8px currentColor; }
+.cal-week-day-count {
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.cal-week-empty {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 0.3rem 0.2rem;
 }
 .cal-header {
   display: flex;
@@ -2235,6 +2325,166 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
 }
 .task-meta .chip.subtasks { background: rgba(155, 89, 214, 0.15); color: #b478e8; font-weight: 700; }
 
+/* ===== SPIDER-LEVEL CARD (top-level player progression) ===== */
+.spider-level-card {
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 176, 40, 0.15), transparent 60%),
+    linear-gradient(135deg, #0a0d1a, #1a2440 70%);
+  border: 2px solid var(--spider-amber);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 0.7rem;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255, 176, 40, 0.2),
+    0 0 30px rgba(255, 176, 40, 0.25),
+    inset 0 0 40px rgba(255, 176, 40, 0.05);
+  clip-path: polygon(
+    0 14px, 14px 0,
+    calc(100% - 14px) 0, 100% 14px,
+    100% calc(100% - 14px), calc(100% - 14px) 100%,
+    14px 100%, 0 calc(100% - 14px)
+  );
+}
+.spider-level-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(115deg, transparent 40%, rgba(255, 176, 40, 0.06) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: achShimmer 4s linear infinite;
+  pointer-events: none;
+}
+.sl-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  margin-bottom: 0.55rem;
+  position: relative; z-index: 1;
+}
+.sl-rank {
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--spider-amber);
+  text-shadow: 0 0 8px var(--spider-amber);
+}
+.sl-lv {
+  font-family: 'Orbitron', monospace;
+  font-size: 2.4rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--spider-amber), #ff7a2a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 12px var(--spider-amber));
+  line-height: 1;
+}
+.sl-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  text-shadow: 0 0 6px rgba(255, 176, 40, 0.5);
+  margin-left: auto;
+}
+.sl-xp-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+  position: relative; z-index: 1;
+}
+.sl-xp-num {
+  font-family: 'Orbitron', monospace;
+  font-weight: 800;
+  color: var(--spider-amber);
+  font-size: 1rem;
+}
+.sl-xp-num small {
+  font-size: 0.55rem;
+  font-weight: 700;
+  opacity: 0.7;
+  letter-spacing: 1px;
+}
+.sl-xp-next {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.sl-xp-bar {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+  position: relative; z-index: 1;
+}
+.sl-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--spider-amber), #ff7a2a, var(--spider-amber));
+  background-size: 200% 100%;
+  box-shadow: 0 0 12px var(--spider-amber);
+  border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.16, 1.1, 0.3, 1);
+  animation: barFlow 2.4s ease-in-out infinite, slXPShimmer 2s linear infinite;
+}
+@keyframes slXPShimmer {
+  from { background-position: 0 0; }
+  to   { background-position: 200% 0; }
+}
+.sl-bonuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  position: relative; z-index: 1;
+}
+.sl-bonus-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(255, 176, 40, 0.12);
+  border: 1px solid rgba(255, 176, 40, 0.4);
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.sl-bonus-label {
+  color: var(--spider-amber);
+  text-transform: uppercase;
+}
+.sl-bonus-bonus {
+  color: #2cd6a4;
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+}
+.sl-bonus-desc {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.sl-bonus-total {
+  margin-left: auto;
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: 0.78rem;
+  color: #2cd6a4;
+  text-shadow: 0 0 8px currentColor;
+}
+.sl-no-bonus {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
 /* ===== STAT SHEET (RPG-style category points) ===== */
 .stat-sheet-total {
   background: var(--bg-card);
@@ -2416,6 +2666,76 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
   height: 100%;
   border-radius: 3px;
   transition: width 0.5s ease-out;
+}
+
+/* Home Spider-Level mini-card */
+.home-sl-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.4rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.6rem;
+}
+.home-sl-left {
+  text-align: center;
+  min-width: 70px;
+  padding-right: 0.4rem;
+  border-right: 1px solid var(--border);
+}
+.home-sl-rank {
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--spider-amber);
+  text-shadow: 0 0 6px currentColor;
+}
+.home-sl-lv {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.7rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--spider-amber), #ff7a2a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 8px var(--spider-amber));
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+.home-sl-right { flex: 1; min-width: 0; }
+.home-sl-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.home-sl-xpbar {
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+.home-sl-xpfill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--spider-amber), #ff7a2a);
+  box-shadow: 0 0 6px var(--spider-amber);
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.16, 1.1, 0.3, 1);
+}
+.home-sl-xpinfo {
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.home-sl-xp {
+  font-family: 'Orbitron', monospace;
+  color: var(--spider-amber);
+  font-weight: 900;
 }
 
 /* Home meta-row (4 meta-categories preview) */
@@ -2684,6 +3004,338 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
 .toggle.on { background: rgba(0, 212, 255, 0.2); border-color: #00d4ff; }
 .toggle.on::after { transform: translateX(20px); background: #00d4ff; }
 
+/* ===== GOALS / BUCKET LIST ===== */
+.goal-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0.8rem;
+  padding: 0.85rem 0.95rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--goal-color, var(--text-dim));
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+  overflow: hidden;
+}
+.goal-card:hover { transform: translateX(2px); }
+.goal-card.done { opacity: 0.6; }
+.goal-card.done .goal-title { text-decoration: line-through; }
+.goal-bg-glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 0% 50%, var(--goal-color), transparent 60%);
+  opacity: 0.1;
+  pointer-events: none;
+}
+.goal-icon {
+  width: 50px; height: 50px;
+  border-radius: 12px;
+  background: var(--goal-color);
+  border: 1.5px solid var(--goal-color);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.7rem;
+  color: white;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  filter: drop-shadow(0 0 10px var(--goal-color));
+  align-self: center;
+  flex-shrink: 0;
+  clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px);
+  position: relative;
+  z-index: 1;
+}
+.goal-body { position: relative; z-index: 1; min-width: 0; }
+.goal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+}
+.goal-title {
+  font-weight: 900;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  font-family: 'Orbitron', sans-serif;
+}
+.goal-tier {
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+}
+.goal-desc {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  max-height: 2.6em;
+  overflow: hidden;
+}
+.goal-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+.goal-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.goal-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.16, 1.1, 0.3, 1);
+  box-shadow: 0 0 6px var(--goal-color);
+}
+.goal-pct {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: var(--goal-color);
+  min-width: 40px;
+  text-align: right;
+}
+.goal-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.goal-chip {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: var(--bg-elevated);
+  padding: 0.12rem 0.45rem;
+  border-radius: 4px;
+  color: var(--text-dim);
+}
+.goal-chip.overdue { background: rgba(230, 36, 41, 0.15); color: #ff5b60; }
+
+/* ===== JOURNAL ===== */
+.journal-entry {
+  background: var(--bg-elevated);
+  padding: 0.6rem 0.7rem;
+  border-radius: 7px;
+  border-left: 3px solid #b478e8;
+  margin-bottom: 0.4rem;
+}
+.journal-entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #b478e8;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.journal-entry-text {
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+/* Home: Journal prompt card */
+.journal-prompt {
+  background: rgba(180, 120, 232, 0.06);
+  border: 1px dashed rgba(180, 120, 232, 0.4);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.journal-prompt:hover { background: rgba(180, 120, 232, 0.12); border-color: #b478e8; }
+.journal-prompt.has-entry { border-style: solid; }
+.journal-prompt-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: rgba(180, 120, 232, 0.18);
+  color: #b478e8;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.journal-prompt-body { flex: 1; min-width: 0; }
+.journal-prompt-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #b478e8;
+  margin-bottom: 0.15rem;
+}
+.journal-prompt-text {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+.journal-prompt-text.has-text {
+  color: var(--text);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Analytics quick-action pills (Trophy / Friends) */
+.analytics-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  padding: 0.7rem;
+}
+.analytics-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.analytics-pill:hover { border-color: var(--accent, var(--red)); transform: translateY(-1px); }
+.analytics-pill .ap-ic {
+  font-size: 1.4rem;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+.analytics-pill .ap-label {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.analytics-pill .ap-sub {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  margin-top: 0.1rem;
+}
+
+/* ===== TROPHY ROOM ===== */
+.trophy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+.trophy-card {
+  position: relative;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--trophy-color, var(--spider-amber));
+  border-radius: 10px;
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+  overflow: hidden;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.trophy-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 0%, var(--trophy-color), transparent 60%);
+  opacity: 0.18;
+  pointer-events: none;
+}
+.trophy-medal {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px var(--trophy-color));
+  margin-bottom: 0.2rem;
+}
+.trophy-stat {
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 8px currentColor;
+  font-family: 'Orbitron', sans-serif;
+}
+.trophy-tier {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-top: 0.15rem;
+}
+.trophy-lv {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--trophy-color);
+  margin-top: 0.15rem;
+}
+.trophy-date {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-top: 0.25rem;
+}
+
+/* ===== LEADERBOARD ===== */
+.leader-row {
+  display: grid;
+  grid-template-columns: 28px 32px 1fr auto auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.6rem 0.7rem;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  margin-bottom: 0.35rem;
+  font-size: 0.82rem;
+}
+.leader-row.me {
+  background: rgba(0, 212, 255, 0.12);
+  border-left: 3px solid #00d4ff;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+}
+.leader-rank { font-size: 1.2rem; text-align: center; }
+.leader-pos {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  color: var(--text-dim);
+  font-size: 0.7rem;
+}
+.leader-name { font-weight: 700; }
+.leader-date {
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.leader-stats {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.leader-total {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  color: var(--spider-amber);
+  text-shadow: 0 0 8px currentColor;
+  font-size: 1.05rem;
+}
+.leader-streak {
+  font-size: 0.7rem;
+  color: #ff9a3c;
+  font-weight: 800;
+}
+
 /* ===== FLOATING BACKGROUND PARTICLES ===== */
 .bg-particles {
   position: fixed;
@@ -2873,48 +3525,178 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
   color: var(--text);
 }
 
-/* ===== THEME VARIANTS — color palette swaps ===== */
+/* ===== THEME VARIANTS — color palette swaps =====
+   Override enough variables AND class rules so the visual change is dramatic. */
+
+/* === VENOM — black + silver/white + blood red accent === */
 body.theme-venom {
-  --red: #b8b8b8;
-  --red-deep: #5a5a5a;
-  --red-glow: rgba(220, 220, 220, 0.4);
-  --blue: #1a1a1a;
-  --cat-push: #d0d0d0;
-  --cat-pull: #444;
-  --advanced: #d40000;
+  --red: #e8e8e8;
+  --red-deep: #6c6c6c;
+  --red-glow: rgba(232, 232, 232, 0.45);
+  --blue: #2a2a30;
+  --bg: #020204;
+  --bg-card: #0a0a0e;
+  --bg-elevated: #14141a;
+  --bg-elevated-hover: #1c1c24;
+  --border: #2a2a32;
+  --text: #f4f4f8;
+  --text-dim: #8a8a92;
+  --cat-push: #f0f0f0;
+  --cat-pull: #5a5a64;
+  --cat-legs: #7a7a82;
+  --cat-core: #d8d8e0;
+  --cat-skill: #ff003c;
+  --cat-plyo: #aeaeb8;
+  --spider-amber: #ff003c;
+  --advanced: #ff003c;
 }
 body.theme-venom .title { background: linear-gradient(135deg, #fff, #888 50%, #333 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body.theme-venom .streak-num,
+body.theme-venom .home-greeting h1 { background: linear-gradient(135deg, #fff, #888); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.5)); }
+body.theme-venom .home-greeting h1::after { content: ' 🦷'; }
+body.theme-venom .stat-power-num { background: linear-gradient(135deg, #fff, #ff003c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body.theme-venom .day-header { background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 80%); }
 
+/* === MILES — red + electric purple === */
 body.theme-miles {
-  --red: #c8102e;
-  --red-deep: #7a0b1c;
-  --red-glow: rgba(200, 16, 46, 0.45);
+  --red: #ff1d3a;
+  --red-deep: #a3001f;
+  --red-glow: rgba(255, 29, 58, 0.5);
   --blue: #6a1b9a;
-  --cat-push: #c8102e;
+  --bg: #08020c;
+  --bg-card: #120819;
+  --bg-elevated: #1d1028;
+  --bg-elevated-hover: #2a1838;
+  --border: #3a2050;
+  --text: #fbf5ff;
+  --text-dim: #a692b8;
+  --cat-push: #ff1d3a;
   --cat-pull: #6a1b9a;
+  --cat-legs: #aa00ff;
+  --cat-core: #ff5b8a;
+  --cat-skill: #d000ff;
+  --cat-plyo: #ff7a2a;
+  --spider-amber: #ffd700;
+}
+body.theme-miles .streak-num,
+body.theme-miles .home-greeting h1 { background: linear-gradient(135deg, #ff1d3a, #d000ff); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(255, 29, 58, 0.5)); }
+body.theme-miles .stat-power-num { background: linear-gradient(135deg, #ff1d3a, #d000ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body.theme-miles .day-header { background: linear-gradient(90deg, rgba(255, 29, 58, 0.32), rgba(208, 0, 255, 0.1) 50%, transparent 80%); }
+
+/* Universal theme contrast guards — text is always readable */
+body[class*="theme-"] .stat-cat-name,
+body[class*="theme-"] .shc-name,
+body[class*="theme-"] .meta-title,
+body[class*="theme-"] .section-title,
+body[class*="theme-"] .goal-title,
+body[class*="theme-"] .day-name,
+body[class*="theme-"] .ex-name,
+body[class*="theme-"] .home-meta-name {
+  /* Drop a subtle outline so colored text never disappears on similarly-colored bg */
+  -webkit-text-stroke: 0.35px rgba(0,0,0,0.45);
+}
+body[class*="theme-"] .leader-name,
+body[class*="theme-"] .task-title,
+body[class*="theme-"] .habit-name,
+body[class*="theme-"] .modal-item-name,
+body[class*="theme-"] .exercise-name {
+  color: var(--text);
 }
 
+/* === SYMBIOTE — pure black + glowing blood red === */
 body.theme-symbiote {
   --red: #ff0033;
   --red-deep: #a3001f;
-  --red-glow: rgba(255, 0, 51, 0.55);
-  --blue: #1a1a2e;
+  --red-glow: rgba(255, 0, 51, 0.7);
+  --blue: #2a2a35;
+  --bg: #000;
+  --bg-card: #060008;
+  --bg-elevated: #0c0410;
+  --bg-elevated-hover: #150818;
+  --border: #2a0010;
+  --text: #fff;
+  --text-dim: #7a6065;
   --cat-push: #ff0033;
-  --cat-pull: #6c6c7a;
-  --bg: #050308;
-  --bg-card: #0c0a14;
-  --bg-elevated: #14111f;
+  --cat-pull: #4a4a55;
+  --cat-legs: #8a0020;
+  --cat-core: #c80028;
+  --cat-skill: #ff5b6e;
+  --cat-plyo: #ff2050;
+  --spider-amber: #ff0033;
+}
+body.theme-symbiote .title { background: linear-gradient(135deg, #ff0033, #fff 60%, #ff0033 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body.theme-symbiote .streak-num,
+body.theme-symbiote .home-greeting h1 { background: linear-gradient(135deg, #ff0033, #fff); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 16px rgba(255, 0, 51, 0.7)); }
+body.theme-symbiote .stat-power-num { background: linear-gradient(135deg, #ff0033, #ff5b6e); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body.theme-symbiote .day-header { background: linear-gradient(90deg, rgba(255, 0, 51, 0.35), transparent 80%); }
+body.theme-symbiote .global-fab.gear:hover { border-color: #ff0033; color: #ff0033; }
+
+/* SYMBIOTE — force readable text everywhere */
+body.theme-symbiote {
+  --text: #ffffff;
+  --text-dim: #a09095;
+}
+body.theme-symbiote .form-input,
+body.theme-symbiote .form-textarea,
+body.theme-symbiote .form-pill {
+  color: #fff;
+  background: #0c0410;
+  border-color: #2a0010;
+}
+body.theme-symbiote .form-input::placeholder,
+body.theme-symbiote .form-textarea::placeholder { color: #6a5055; }
+body.theme-symbiote .form-pill.active { color: #fff; background: #ff0033; border-color: #ff0033; }
+body.theme-symbiote .section-title,
+body.theme-symbiote .day-name,
+body.theme-symbiote .modal-title,
+body.theme-symbiote .meta-title,
+body.theme-symbiote .shc-name,
+body.theme-symbiote .stat-cat-name,
+body.theme-symbiote .home-meta-name,
+body.theme-symbiote .list-card-title,
+body.theme-symbiote .home-stats-title,
+body.theme-symbiote .goal-title,
+body.theme-symbiote .exercise-name,
+body.theme-symbiote .task-title,
+body.theme-symbiote .habit-name,
+body.theme-symbiote .ach-tier {
+  color: #fff !important;
+  -webkit-text-stroke: 0;
+  text-shadow: 0 0 6px rgba(255, 0, 51, 0.4);
+}
+body.theme-symbiote .stat-card .v,
+body.theme-symbiote .home-meta-num,
+body.theme-symbiote .meta-power-num {
+  color: #fff !important;
+  text-shadow: 0 0 10px rgba(255, 0, 51, 0.6);
 }
 
+/* === 2099 — cyber red + electric cyan + neon green === */
 body.theme-suit-2099 {
   --red: #ff003c;
   --red-deep: #b00029;
   --red-glow: rgba(255, 0, 60, 0.55);
   --blue: #00d4ff;
-  --spider-amber: #00ffaa;
-  --cat-pull: #00d4ff;
+  --bg: #030814;
+  --bg-card: #08121e;
+  --bg-elevated: #0d1c30;
+  --bg-elevated-hover: #14283f;
+  --border: #1a3a5e;
+  --text: #e0f4ff;
+  --text-dim: #6088aa;
   --cat-push: #ff003c;
+  --cat-pull: #00d4ff;
+  --cat-legs: #00ffaa;
+  --cat-core: #ffd700;
+  --cat-skill: #c000ff;
+  --cat-plyo: #ff8800;
+  --spider-amber: #00ffaa;
 }
+body.theme-suit-2099 .title { background: linear-gradient(135deg, #ff003c, #00d4ff 50%, #00ffaa 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body.theme-suit-2099 .streak-num,
+body.theme-suit-2099 .home-greeting h1 { background: linear-gradient(135deg, #00d4ff, #00ffaa); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(0, 212, 255, 0.6)); }
+body.theme-suit-2099 .stat-power-num { background: linear-gradient(135deg, #00d4ff, #ff003c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body.theme-suit-2099 .day-header { background: linear-gradient(90deg, rgba(255, 0, 60, 0.3), rgba(0, 212, 255, 0.15) 50%, transparent 80%); }
 
 /* ===== TIME-OF-DAY BACKGROUND OVERLAY ===== */
 .time-overlay {
@@ -4222,6 +5004,10 @@ let state = {
   focusSessions: [],// { ts, taskId, duration, completed }
   workoutSession: null, // active in-progress workout session, persists across reloads
   personalBests: {},   // { 'poolId/exerciseId': { sets, reps, total, date } }
+  goals: [],           // long-term achievements / bucket list
+  journal: [],         // [{date, text, mood, ts}]
+  friends: [],         // [{name, code, addedAt, snapshot}]
+  trophies: [],        // [{stat, tierName, level, color, ts, isMetaPower}] auto-tracked tier-ups
   settings: {
     userName: '',
     notifications: false,
@@ -4272,16 +5058,85 @@ const META_GROUPS = [
   { id: 'lifestyle', name: 'LIFESTYLE', icon: '🌿', stats: LIFESTYLE_STATS, bar: 'linear-gradient(90deg,#7ddc7d,#26c6da)' },
   { id: 'mastery',   name: 'MASTERY',   icon: '🎓', stats: MASTERY_STATS,   bar: 'linear-gradient(90deg,#7986cb,#ec407a)' }
 ];
+// SUB-STAT tier ladder — bumped ~2x so categories take longer to master
 const STAT_TIERS = [
   { name: 'Civilian',     min: 0    },
-  { name: 'Trainee',      min: 10   },
-  { name: 'Sidekick',     min: 25   },
-  { name: 'Hero',         min: 50   },
-  { name: 'Avenger',      min: 100  },
-  { name: 'Web-Slinger',  min: 200  },
-  { name: 'Symbiote',     min: 500  },
-  { name: 'Spider-Verse', min: 1000 }
+  { name: 'Trainee',      min: 20   },
+  { name: 'Sidekick',     min: 55   },
+  { name: 'Hero',         min: 120  },
+  { name: 'Avenger',      min: 250  },
+  { name: 'Web-Slinger',  min: 500  },
+  { name: 'Symbiote',     min: 1100 },
+  { name: 'Spider-Verse', min: 2500 }
 ];
+
+// SPIDER LEVEL (overall player progression) — slow exponential curve
+const SPIDER_LEVELS = [
+  { lv: 1,  min: 0,     title: 'Civilian' },
+  { lv: 2,  min: 30,    title: 'Trainee' },
+  { lv: 3,  min: 80,    title: 'Sidekick' },
+  { lv: 4,  min: 180,   title: 'Rookie Hero' },
+  { lv: 5,  min: 380,   title: 'Hero' },
+  { lv: 6,  min: 750,   title: 'Avenger' },
+  { lv: 7,  min: 1400,  title: 'Web-Slinger' },
+  { lv: 8,  min: 2500,  title: 'Symbiote Host' },
+  { lv: 9,  min: 4300,  title: 'Spider-Verse' },
+  { lv: 10, min: 7200,  title: 'Multiverse' },
+  { lv: 11, min: 12000, title: 'Above All' },
+  { lv: 12, min: 20000, title: 'Eternal' }
+];
+
+function spiderLevelFor(xp) {
+  let cur = SPIDER_LEVELS[0], idx = 0;
+  for (let i = 0; i < SPIDER_LEVELS.length; i++) {
+    if (xp >= SPIDER_LEVELS[i].min) { cur = SPIDER_LEVELS[i]; idx = i; }
+  }
+  const next = SPIDER_LEVELS[idx + 1] || null;
+  const prevMin = cur.min;
+  const nextMin = next ? next.min : cur.min;
+  const span = Math.max(1, nextMin - prevMin);
+  const progress = next ? Math.min(1, (xp - prevMin) / span) : 1;
+  const toNext = next ? Math.max(0, nextMin - xp) : 0;
+  return { current: cur, next, progress, toNext, maxed: !next };
+}
+
+// XP bonuses: variety + streak + completion. Returns { multiplier, breakdown[] }
+function computeXPBonuses() {
+  const breakdown = [];
+  let mult = 1.0;
+
+  // Variety bonus: touching activities across 3+ different meta-categories ever earned points
+  const pts = computeStatPoints();
+  const metaTouched = META_GROUPS.filter(g => g.stats.some(s => (pts[s] || 0) > 0)).length;
+  if (metaTouched >= 3) { mult += 0.20; breakdown.push({ label: 'VARIETY', desc: '3+ categories', bonus: '+20%' }); }
+  if (metaTouched >= 4) { mult += 0.10; breakdown.push({ label: 'ALL-ROUNDER', desc: '4 categories', bonus: '+10%' }); }
+
+  // Streak bonus: +5% per streak day, capped at +50%
+  const wstreak = workoutStreak();
+  if (wstreak >= 3) {
+    const sb = Math.min(0.5, wstreak * 0.05);
+    mult += sb;
+    breakdown.push({ label: 'STREAK', desc: wstreak + '-day workout', bonus: '+' + Math.round(sb * 100) + '%' });
+  }
+
+  // Trophy bonus: +2% per trophy earned, capped at +30%
+  const trophyCount = (state.trophies || []).length;
+  if (trophyCount > 0) {
+    const tb = Math.min(0.30, trophyCount * 0.02);
+    mult += tb;
+    breakdown.push({ label: 'LEGACY', desc: trophyCount + ' trophies', bonus: '+' + Math.round(tb * 100) + '%' });
+  }
+
+  return { multiplier: mult, breakdown };
+}
+
+// Total XP = base stat points * bonus multiplier
+function computeTotalXP() {
+  const pts = computeStatPoints();
+  const baseTotal = Object.values(pts).reduce((a, b) => a + b, 0);
+  const { multiplier } = computeXPBonuses();
+  return Math.round(baseTotal * multiplier);
+}
 const PRIO_ORDER = { high: 0, medium: 1, low: 2 };
 const HABIT_PALETTE = [
   { color: '#ff9a3c', bg: 'rgba(255, 122, 42, 0.15)' },
@@ -4337,8 +5192,25 @@ function loadState() {
       if (!parsed.settings.theme) parsed.settings.theme = 'spiderman';
       if (!parsed.settings.defaultRestSec) parsed.settings.defaultRestSec = 60;
       if (!parsed.personalBests) parsed.personalBests = {};
+      if (!parsed.goals) parsed.goals = [];
+      // Migrate goals: ensure questType field exists
+      parsed.goals.forEach(g => {
+        if (!g.questType) {
+          // Auto-classify by target date duration: ≤45 days from creation = side, else main
+          if (g.targetDate && g.createdAt) {
+            const days = (new Date(g.targetDate) - new Date(g.createdAt)) / 86400000;
+            g.questType = days <= 45 ? 'side' : 'main';
+          } else {
+            g.questType = 'main';
+          }
+        }
+      });
+      if (!parsed.journal) parsed.journal = [];
+      if (!parsed.friends) parsed.friends = [];
+      if (!parsed.trophies) parsed.trophies = [];
       if (!parsed.ui) parsed.ui = { tab: 'workouts', scheduleView: 'list', calMonth: null };
       if (!parsed.ui.scheduleView) parsed.ui.scheduleView = 'list';
+      if (!parsed.ui.questView) parsed.ui.questView = 'daily';
       // Backfill subtasks on existing tasks
       parsed.tasks.forEach(t => { if (!t.subtasks) t.subtasks = []; });
       state = parsed;
@@ -4481,13 +5353,13 @@ function playSound(name) {
 
   // SM2-inspired recipes
   const recipes = {
-    // hover/tap — short, light digital tick
-    tap:        () => { tone(1800, 'square', 0.022, 0.025, { lp: 3500 }); },
+    // hover/tap — softer triangle tick (refined)
+    tap:        () => { tone(2200, 'triangle', 0.025, 0.022, { lp: 4500, attack: 0.002 }); },
 
-    // menu click — punchy square + brief noise edge
+    // menu click — softer punchy click (refined: less harsh square)
     click:      () => {
-      tone(1200, 'square', 0.04, 0.04, { lp: 4000, bendTo: 700 });
-      noise(0.015, 0.015, { freq: 4000 });
+      tone(1400, 'triangle', 0.05, 0.04, { lp: 5000, bendTo: 800, attack: 0.003 });
+      noise(0.012, 0.012, { freq: 5000 });
     },
 
     // selection confirm (like equipping) — metallic dual tone
@@ -4598,7 +5470,40 @@ let _achievementShowing = false;
 
 function showAchievement(statName, tierName, level, color) {
   _achievementQueue.push({ statName, tierName, level, color });
+  // Persist as trophy
+  state.trophies = state.trophies || [];
+  state.trophies.push({ stat: statName, tierName, level, color, ts: Date.now() });
+  saveState(true);
   if (!_achievementShowing) drainAchievementQueue();
+}
+
+function openTrophyRoom() {
+  modalContext = { kind: 'trophies' };
+  document.getElementById('modal-title').textContent = '🏆 TROPHY ROOM';
+  const trophies = [...(state.trophies || [])].sort((a, b) => b.ts - a.ts);
+  document.getElementById('modal-body').innerHTML = `
+    <div style="padding:0.6rem 0.5rem;color:var(--text-dim);font-size:0.78rem;line-height:1.5">
+      Every tier-up you've earned, in order. ${trophies.length} trophy${trophies.length === 1 ? '' : 'ies'} so far.
+    </div>
+    ${trophies.length === 0
+      ? '<div class="empty-row" style="padding:2rem 0">No trophies yet. Earn one by crossing a stat tier — like reaching <strong style="color:var(--text)">10 PUSH points to hit Trainee</strong>.</div>'
+      : `<div class="trophy-grid">
+        ${trophies.map(t => {
+          const d = new Date(t.ts);
+          return `
+            <div class="trophy-card" style="--trophy-color:${t.color}">
+              <div class="trophy-medal">🏆</div>
+              <div class="trophy-stat" style="color:${t.color}">${escapeHtml(t.stat)}</div>
+              <div class="trophy-tier">${escapeHtml(t.tierName)}</div>
+              <div class="trophy-lv">LV ${t.level}</div>
+              <div class="trophy-date">${d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>`}
+  `;
+  document.getElementById('modal-footer').style.display = 'none';
+  openModal();
 }
 function drainAchievementQueue() {
   if (_achievementQueue.length === 0) { _achievementShowing = false; return; }
@@ -5288,7 +6193,7 @@ function switchTab(tabName) {
 
   if (tabName === 'home')      renderHome();
   if (tabName === 'schedule')  renderSchedule();
-  if (tabName === 'habits')    renderHabits();
+  if (tabName === 'habits')    { applyQuestViewBg(); renderHabits(); }
   if (tabName === 'analytics') renderAnalytics();
   updateNavBadges();
   window.scrollTo(0, 0);
@@ -5328,8 +6233,12 @@ function updateNavBadges() {
     }
   };
 
+  // Goals overdue → folds into Quests badge
+  const goalsOverdue = (state.goals || []).filter(g => !g.completed && g.targetDate && g.targetDate < today).length;
+  const questsTotalBadge = questsRemaining + goalsOverdue;
+
   setBadge('schedule', scheduleCount, overdueCount > 0 ? 'overdue' : '');
-  setBadge('habits', questsRemaining, 'quest');
+  setBadge('habits', questsTotalBadge, goalsOverdue > 0 ? 'overdue' : 'quest');
   setBadge('workouts', workoutPending, '');
   setBadge('home', overdueCount, overdueCount > 0 ? 'overdue' : '');
   setBadge('analytics', 0);
@@ -5728,12 +6637,39 @@ function renderSummaryScreen() {
     `<span class="chip" style="background:${CAT_COLORS[c]}">+${cats[c]} ${c}</span>`
   ).join('');
 
+  // New personal bests
+  const newPBs = s._newPBs || [];
+  let pbBlock = '';
+  if (newPBs.length > 0) {
+    playSound('levelUp');
+    setTimeout(() => {
+      spawnBurst(window.innerWidth/2, window.innerHeight*0.4, '#ffb028', 14);
+    }, 100);
+    pbBlock = `
+      <div class="wo-pb wo-pb-new" style="margin:0.4rem 0">
+        🏆 ${newPBs.length} NEW PERSONAL BEST${newPBs.length > 1 ? 'S' : ''}!
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.3rem;width:100%;max-width:340px">
+        ${newPBs.map(pb => {
+          const ex = findExercise(pb.poolId, pb.exerciseId);
+          return `
+            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,176,40,0.08);border-left:3px solid var(--spider-amber);padding:0.45rem 0.65rem;border-radius:6px;font-size:0.78rem">
+              <span style="font-weight:700">${escapeHtml(ex?.name || '?')}</span>
+              <span style="font-family:'Orbitron',monospace;font-weight:900;color:var(--spider-amber)">${pb.total} reps</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
   document.getElementById('wo-content').innerHTML = `
     <div class="wo-screen">
       <div style="font-size:0.78rem;letter-spacing:3px;font-weight:900;color:var(--cat-legs);text-transform:uppercase">💪 Workout Complete</div>
       <div class="wo-summary-num">${m}:${String(sec).padStart(2,'0')}</div>
       <div class="wo-set-display">${completedExercises} exercises · ${totalSets} sets</div>
       <div class="wo-summary-gain">${gainChips}</div>
+      ${pbBlock}
       <button class="wo-big-btn primary" onclick="exitWorkoutSummary()">🕸 Awesome</button>
     </div>
   `;
@@ -5997,12 +6933,17 @@ function renderSchedule() {
     </div>
     <div class="view-toggle">
       <button class="${mode === 'list' ? 'active' : ''}" onclick="setScheduleView('list')">List</button>
-      <button class="${mode === 'calendar' ? 'active' : ''}" onclick="setScheduleView('calendar')">Calendar</button>
+      <button class="${mode === 'week' ? 'active' : ''}" onclick="setScheduleView('week')">Week</button>
+      <button class="${mode === 'calendar' ? 'active' : ''}" onclick="setScheduleView('calendar')">Month</button>
     </div>
   `;
 
   if (mode === 'calendar') {
     view.innerHTML = header + renderScheduleCalendarHTML();
+    return;
+  }
+  if (mode === 'week') {
+    view.innerHTML = header + renderScheduleWeekHTML();
     return;
   }
 
@@ -6118,6 +7059,84 @@ function renderScheduleCalendarHTML() {
     `;
   }
   return html;
+}
+
+function renderScheduleWeekHTML() {
+  // Week from Monday to Sunday containing (today + 7*_weekOffset days)
+  const today = new Date();
+  const dow = today.getDay(); // 0=Sun
+  const offset = (dow === 0 ? -6 : 1 - dow); // shift so Monday is start
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() + offset + (_weekOffset * 7));
+  weekStart.setHours(0,0,0,0);
+
+  const todayIso = todayDate();
+  const dayNames3 = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+  const dayNamesFull = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+  // Build 7 days of tasks
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    const iso = d.toISOString().slice(0,10);
+    const dn3 = dayNames3[i];
+    const tasks = (state.tasks || []).filter(t => {
+      if (t.recurring) {
+        return (t.recurringDays || []).includes(dn3) && !(t.completionsByDate && t.completionsByDate[iso]);
+      }
+      return t.dueDate === iso && !t.completed;
+    });
+    // Also include done tasks for this date so user sees the full picture
+    const doneTasks = (state.tasks || []).filter(t => {
+      if (t.recurring) {
+        return (t.recurringDays || []).includes(dn3) && (t.completionsByDate && t.completionsByDate[iso]);
+      }
+      return t.dueDate === iso && t.completed &&
+        t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === iso;
+    });
+    days.push({
+      iso, name: dayNamesFull[i],
+      isToday: iso === todayIso,
+      isPast: iso < todayIso,
+      tasks, doneTasks
+    });
+  }
+
+  const monthRange = weekStart.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
+    ' – ' + new Date(weekStart.getTime() + 6 * 86400000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+  return `
+    <div class="cal-week-card">
+      <div class="cal-header">
+        <button class="cal-nav-btn" onclick="changeWeek(-1)">‹</button>
+        <div class="cal-title">${monthRange}</div>
+        <button class="cal-nav-btn" onclick="changeWeek(1)">›</button>
+      </div>
+      <div class="cal-week-list">
+        ${days.map(d => `
+          <div class="cal-week-day ${d.isToday ? 'today' : ''} ${d.isPast ? 'past' : ''}">
+            <div class="cal-week-day-head">
+              <div class="cal-week-day-name">${d.name}${d.isToday ? ' · TODAY' : ''}</div>
+              <div class="cal-week-day-count">${d.tasks.length + d.doneTasks.length} task${(d.tasks.length + d.doneTasks.length) === 1 ? '' : 's'}</div>
+            </div>
+            ${d.tasks.length === 0 && d.doneTasks.length === 0
+              ? '<div class="cal-week-empty">No tasks</div>'
+              : `
+                ${d.tasks.map(taskRowHTML).join('')}
+                ${d.doneTasks.map(taskRowHTML).join('')}
+              `}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+let _weekOffset = 0;
+function changeWeek(delta) {
+  _weekOffset += delta;
+  renderSchedule();
 }
 
 function changeCalMonth(delta) {
@@ -6301,20 +7320,107 @@ function habitStreak(h) {
   return streak;
 }
 
+function setQuestView(v) {
+  state.ui.questView = v;
+  saveState(true);
+  applyQuestViewBg();
+  renderHabits();
+}
+
+// Apply body class so the page bg shifts per quest view
+function applyQuestViewBg() {
+  document.body.classList.remove('qv-daily','qv-side','qv-main');
+  document.body.classList.add('qv-' + (state.ui.questView || 'daily'));
+}
+
 function renderHabits() {
   const view = document.getElementById('tab-habits');
+  const mode = state.ui.questView || 'daily';
   const habits = state.habits || [];
+  const goals = state.goals || [];
+  const sideQuests = goals.filter(g => g.questType === 'side');
+  const mainQuests = goals.filter(g => g.questType === 'main');
+
+  const counts = {
+    daily: habits.length,
+    side: sideQuests.filter(g => !g.completed).length,
+    main: mainQuests.filter(g => !g.completed).length
+  };
+
+  // Sort: legendary first, then by progress
+  const tierRank = { legendary: 0, epic: 1, rare: 2, common: 3 };
+  const sortGoals = arr => [...arr].sort((a, b) =>
+    (Number(a.completed) - Number(b.completed)) ||
+    ((tierRank[a.tier] || 1) - (tierRank[b.tier] || 1)) ||
+    ((b.progress || 0) - (a.progress || 0))
+  );
+
+  const addBtn = () => {
+    if (mode === 'daily') return `<button class="section-action" style="background:#ff9a3c;color:#1a0e00" onclick="openHabitForm()">+ New Daily</button>`;
+    if (mode === 'side')  return `<button class="section-action" style="background:linear-gradient(180deg,#00d4ff,#0090b8);color:#001620" onclick="openGoalForm(null,'side')">+ New Side</button>`;
+    return `<button class="section-action" style="background:linear-gradient(180deg,#e62429,#a8121a);color:white" onclick="openGoalForm(null,'main')">+ New Main</button>`;
+  };
+
+  let body = '';
+  if (mode === 'daily') {
+    body = habits.length === 0
+      ? `<div class="empty-row" style="padding:3rem 0">No daily quests yet.<br>Tap <strong style="color:#ff9a3c">+ New Daily</strong> to start your saga.</div>`
+      : habits.map(habitRowHTML).join('');
+  } else if (mode === 'side') {
+    body = sideQuests.length === 0
+      ? `<div class="empty-row" style="padding:3rem 0">No side quests yet.<br>Small achievable goals (2–3 weeks).<br>e.g. <em>finish a book · learn 3 chords</em></div>`
+      : sortGoals(sideQuests).map(goalCardHTML).join('');
+  } else { // main
+    body = mainQuests.length === 0
+      ? `<div class="empty-row" style="padding:3rem 0">No main quests yet.<br>Year-long sagas.<br>e.g. <em>build a PC · save $1000 · run a marathon</em></div>`
+      : sortGoals(mainQuests).map(goalCardHTML).join('');
+  }
+
   view.innerHTML = `
     <div class="section-header">
       <div>
         <div class="section-title">Quests</div>
-        <div class="section-sub">Daily quests · Build your saga</div>
+        <div class="section-sub">Daily · Side · Main</div>
       </div>
-      <button class="section-action" style="background:#ff9a3c" onclick="openHabitForm()">+ New Quest</button>
+      ${addBtn()}
     </div>
-    ${habits.length === 0
-      ? `<div class="empty-row" style="padding:3rem 0">No quests yet.<br>Tap <strong style="color:#ff9a3c">+ New Quest</strong> to start your saga.</div>`
-      : habits.map(habitRowHTML).join('')}
+    <div class="view-toggle view-toggle-qv">
+      <button class="qv-btn qv-daily-btn ${mode === 'daily' ? 'active' : ''}" onclick="setQuestView('daily')"><span class="qv-ic">↻</span><span class="qv-lbl">Daily</span><span class="vt-count">× ${counts.daily}</span></button>
+      <button class="qv-btn qv-side-btn ${mode === 'side' ? 'active' : ''}" onclick="setQuestView('side')"><span class="qv-ic">⚡</span><span class="qv-lbl">Side</span><span class="vt-count">× ${counts.side}</span></button>
+      <button class="qv-btn qv-main-btn ${mode === 'main' ? 'active' : ''}" onclick="setQuestView('main')"><span class="qv-ic">🏆</span><span class="qv-lbl">Main</span><span class="vt-count">× ${counts.main}</span></button>
+    </div>
+    ${body}
+  `;
+}
+
+// Extracted goal card renderer (was inline in renderGoals)
+function goalCardHTML(g) {
+  const tcolor = TIER_COLORS[g.tier || 'epic'];
+  const ms = g.milestones || [];
+  const msDone = ms.filter(m => m.done).length;
+  const dateStr = g.targetDate ? '🎯 ' + fmtDate(g.targetDate) : '';
+  const overdue = g.targetDate && !g.completed && g.targetDate < todayDate();
+  return `
+    <div class="goal-card ${g.completed ? 'done' : ''}" style="--goal-color:${tcolor};--bracket-c:${tcolor}88" onclick="openGoalForm('${g.id}')">
+      <div class="goal-bg-glow"></div>
+      <div class="goal-icon">${g.icon || '⛯'}</div>
+      <div class="goal-body">
+        <div class="goal-head">
+          <span class="goal-title">${escapeHtml(g.title)}</span>
+          <span class="goal-tier" style="background:${tcolor}22;color:${tcolor}">${g.tier || 'epic'}</span>
+        </div>
+        ${g.description ? `<div class="goal-desc">${escapeHtml(g.description)}</div>` : ''}
+        <div class="goal-progress-row">
+          <div class="goal-bar"><div class="goal-bar-fill" style="width:${g.progress || 0}%;background:linear-gradient(90deg,${tcolor},${tcolor}aa)"></div></div>
+          <span class="goal-pct">${g.progress || 0}%</span>
+        </div>
+        <div class="goal-meta">
+          ${ms.length > 0 ? `<span class="goal-chip">☑ ${msDone}/${ms.length}</span>` : ''}
+          ${dateStr ? `<span class="goal-chip ${overdue ? 'overdue' : ''}">${dateStr}</span>` : ''}
+          ${g.completed ? `<span class="goal-chip" style="background:rgba(44,214,164,0.2);color:#2cd6a4">✓ COMPLETED</span>` : ''}
+        </div>
+      </div>
+    </div>
   `;
 }
 
@@ -6409,6 +7515,19 @@ function renderHome() {
         <div class="intention-text ${intention ? 'set' : ''}">${intention ? escapeHtml(intention.text) : 'What\'s your main goal for today?'}</div>
       </div>
     </div>
+
+    ${(() => {
+      const todayJ = (state.journal || []).find(j => j.date === todayDate());
+      return `
+        <div class="journal-prompt ${todayJ ? 'has-entry' : ''}" onclick="openJournal()">
+          <div class="journal-prompt-icon">📓</div>
+          <div class="journal-prompt-body">
+            <div class="journal-prompt-title">${todayJ ? 'Today\'s Journal' : 'Open Journal'}</div>
+            <div class="journal-prompt-text ${todayJ ? 'has-text' : ''}">${todayJ ? (todayJ.mood ? todayJ.mood + ' ' : '') + escapeHtml(todayJ.text.slice(0, 80)) + (todayJ.text.length > 80 ? '…' : '') : 'Reflect on today (+1 REFLECTION)'}</div>
+          </div>
+        </div>
+      `;
+    })()}
 
     <div class="streak-card">
       <div>
@@ -6512,6 +7631,23 @@ function renderAnalytics() {
         <div><div class="v">${wstreak}🔥</div><div class="l">Workout Streak</div></div>
         <div class="stat-pill orange">✦</div>
       </div>
+    </div>
+
+    <div class="chart-card analytics-actions">
+      <button class="analytics-pill" onclick="openTrophyRoom()">
+        <span class="ap-ic" style="color:#ffd700">🏆</span>
+        <div class="ap-body">
+          <div class="ap-label">Trophy Room</div>
+          <div class="ap-sub">${(state.trophies || []).length} earned</div>
+        </div>
+      </button>
+      <button class="analytics-pill" onclick="openFriends()">
+        <span class="ap-ic" style="color:#00d4ff">👥</span>
+        <div class="ap-body">
+          <div class="ap-label">Friends · Leaderboard</div>
+          <div class="ap-sub">${(state.friends || []).length} friend${(state.friends || []).length === 1 ? '' : 's'}</div>
+        </div>
+      </button>
     </div>
 
     ${renderStatSheetHTML()}
@@ -6654,6 +7790,445 @@ function renderTasksOverTime() {
                 y: { beginAtZero: true, grid: { color: '#25253a' }, ticks: { color: '#7c7c8a', font: { size: 10 }, precision: 0 } } }
     }
   });
+}
+
+// ====== GOALS / LONG-TERM ACHIEVEMENTS ======
+function openGoalForm(goalId, defaultType) {
+  const existing = goalId ? state.goals.find(g => g.id === goalId) : null;
+  modalContext = {
+    kind: 'goal',
+    editingId: goalId || null,
+    draft: existing ? { ...existing, milestones: [...(existing.milestones || [])] } : {
+      title: '',
+      description: '',
+      icon: '⛯',
+      tier: defaultType === 'main' ? 'legendary' : 'epic',
+      questType: defaultType || 'side',
+      targetDate: '',
+      progress: 0,
+      milestones: [],
+      completed: false
+    }
+  };
+  renderGoalForm();
+}
+
+function renderGoalForm() {
+  const isEdit = !!modalContext.editingId;
+  const d = modalContext.draft;
+  document.getElementById('modal-title').textContent = isEdit ? 'EDIT GOAL' : 'NEW GOAL';
+  const icons = ['⛯','🏆','✦','◈','✎','⌬','✿','♥','★','🚀','💼','🎓','💪','🎨','📷','🎸'];
+  const tiers = [
+    { id: 'common',   label: 'Common',    color: '#7a7a82' },
+    { id: 'rare',     label: 'Rare',      color: '#4a9eff' },
+    { id: 'epic',     label: 'Epic',      color: '#b478e8' },
+    { id: 'legendary',label: 'Legendary', color: '#ffd700' }
+  ];
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-field">
+      <label class="form-label">Title</label>
+      <input class="form-input" id="g-title" type="text" value="${escapeHtml(d.title)}" placeholder="e.g. Build an app" maxlength="80">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Description (optional)</label>
+      <textarea class="form-textarea" id="g-desc" placeholder="Why does this matter? What does done look like?" maxlength="400">${escapeHtml(d.description)}</textarea>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Icon</label>
+      <div class="form-button-grid">
+        ${icons.map(i => `<button class="form-pill ${d.icon === i ? 'active' : ''}" onclick="setGoalField('icon','${i}')">${i}</button>`).join('')}
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Quest type</label>
+      <div class="form-button-grid">
+        <button class="form-pill ${d.questType === 'side' ? 'active' : ''}" style="${d.questType === 'side' ? 'background:#00d4ff;border-color:transparent;color:#001620' : ''}" onclick="setGoalField('questType','side')">⚡ Side Quest</button>
+        <button class="form-pill ${d.questType === 'main' ? 'active' : ''}" style="${d.questType === 'main' ? 'background:linear-gradient(180deg,#e62429,#a8121a);border-color:transparent;color:white' : ''}" onclick="setGoalField('questType','main')">🏆 Main Quest</button>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Quest length</label>
+      <div class="form-button-grid">
+        ${[
+          { lbl: '3d', days: 3 }, { lbl: '1w', days: 7 }, { lbl: '2w', days: 14 },
+          { lbl: '1mo', days: 30 }, { lbl: '3mo', days: 90 }, { lbl: '6mo', days: 180 }, { lbl: '1yr', days: 365 }
+        ].map(p => `<button class="form-pill" onclick="setGoalLength(${p.days})">${p.lbl}</button>`).join('')}
+        <button class="form-pill" onclick="setGoalLength(null)">Custom</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.5rem;font-size:0.7rem;color:var(--text-dim)">
+        <input type="number" id="g-length-days" placeholder="days" min="1" max="3650" value="${d.lengthDays || ''}" style="width:80px;padding:0.4rem 0.5rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:inherit" onchange="setGoalLength(parseInt(this.value)||null)">
+        <span>days from today</span>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Rarity</label>
+      <div class="form-button-grid">
+        ${tiers.map(t => `
+          <button class="form-pill ${d.tier === t.id ? 'active' : ''}" style="${d.tier === t.id ? 'background:' + t.color + ';border-color:transparent;color:white' : 'color:' + t.color + ';border-color:' + t.color}" onclick="setGoalField('tier','${t.id}')">${t.label}</button>
+        `).join('')}
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Target date (optional)</label>
+      <input class="form-input" id="g-date" type="date" value="${d.targetDate || ''}">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Progress (${d.progress || 0}%)</label>
+      <input class="form-input" id="g-prog" type="range" min="0" max="100" value="${d.progress || 0}" oninput="updateGoalProgress(this.value)">
+      <div id="g-prog-display" style="text-align:center;font-family:'Orbitron',monospace;font-weight:900;color:var(--spider-amber);margin-top:0.3rem">${d.progress || 0}%</div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Milestones (steps to break it down)</label>
+      <div class="subtask-list" id="g-miles">
+        ${(d.milestones || []).map((m, i) => `
+          <div class="subtask-row ${m.done ? 'done' : ''}">
+            <input type="checkbox" ${m.done ? 'checked' : ''} onchange="toggleGoalMilestone(${i})">
+            <span class="subtask-text">${escapeHtml(m.text)}</span>
+            <button class="subtask-del" onclick="removeGoalMilestone(${i})">×</button>
+          </div>
+        `).join('')}
+        <div class="subtask-add">
+          <input type="text" id="g-mile-new" placeholder="Add a milestone..." onkeydown="if(event.key==='Enter'){event.preventDefault();addGoalMilestone();}">
+          <button onclick="addGoalMilestone()">+</button>
+        </div>
+      </div>
+    </div>
+  `;
+  const footer = document.getElementById('modal-footer');
+  footer.style.display = 'flex';
+  footer.innerHTML = `
+    ${isEdit ? '<button class="btn danger" onclick="deleteGoal()">Delete</button>' : ''}
+    <button class="btn secondary" onclick="closeModal()">Cancel</button>
+    <button class="btn primary" onclick="saveGoal()">${isEdit ? 'Save' : 'Add'}</button>
+  `;
+  openModal();
+  setTimeout(() => document.getElementById('g-title')?.focus(), 100);
+}
+
+function setGoalField(field, value) {
+  syncGoalInputs();
+  modalContext.draft[field] = value;
+  renderGoalForm();
+}
+
+function setGoalLength(days) {
+  syncGoalInputs();
+  if (days && days > 0) {
+    modalContext.draft.lengthDays = days;
+    const today = new Date();
+    today.setDate(today.getDate() + days);
+    modalContext.draft.targetDate = today.toISOString().slice(0, 10);
+    // Auto-classify: ≤45 days → side, else main
+    modalContext.draft.questType = days <= 45 ? 'side' : 'main';
+  } else {
+    modalContext.draft.lengthDays = null;
+  }
+  renderGoalForm();
+}
+function updateGoalProgress(v) {
+  modalContext.draft.progress = parseInt(v) || 0;
+  const disp = document.getElementById('g-prog-display');
+  if (disp) disp.textContent = modalContext.draft.progress + '%';
+}
+function syncGoalInputs() {
+  const t = document.getElementById('g-title'); if (t) modalContext.draft.title = t.value;
+  const desc = document.getElementById('g-desc'); if (desc) modalContext.draft.description = desc.value;
+  const dt = document.getElementById('g-date'); if (dt) modalContext.draft.targetDate = dt.value;
+  const pr = document.getElementById('g-prog'); if (pr) modalContext.draft.progress = parseInt(pr.value) || 0;
+}
+function addGoalMilestone() {
+  syncGoalInputs();
+  const input = document.getElementById('g-mile-new');
+  const text = input?.value?.trim();
+  if (!text) return;
+  modalContext.draft.milestones = modalContext.draft.milestones || [];
+  modalContext.draft.milestones.push({ text, done: false });
+  renderGoalForm();
+  setTimeout(() => document.getElementById('g-mile-new')?.focus(), 50);
+}
+function removeGoalMilestone(i) {
+  syncGoalInputs();
+  modalContext.draft.milestones.splice(i, 1);
+  renderGoalForm();
+}
+function toggleGoalMilestone(i) {
+  syncGoalInputs();
+  modalContext.draft.milestones[i].done = !modalContext.draft.milestones[i].done;
+  // Recompute progress from milestones if there are any
+  const ms = modalContext.draft.milestones;
+  if (ms.length > 0) {
+    modalContext.draft.progress = Math.round((ms.filter(m => m.done).length / ms.length) * 100);
+  }
+  renderGoalForm();
+}
+
+function saveGoal() {
+  syncGoalInputs();
+  const d = modalContext.draft;
+  if (!d.title) { showToast('Title required'); return; }
+  if (modalContext.editingId) {
+    const idx = state.goals.findIndex(g => g.id === modalContext.editingId);
+    if (idx >= 0) state.goals[idx] = { ...state.goals[idx], ...d };
+    showToast('Goal updated');
+  } else {
+    d.id = 'goal_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    d.createdAt = Date.now();
+    state.goals.push(d);
+    showToast('Goal added');
+    playSound('select');
+  }
+  // Auto-complete if 100%
+  if (d.progress >= 100 && !d.completed) {
+    d.completed = true;
+    d.completedAt = Date.now();
+    playSound('complete');
+    setTimeout(() => spawnBurst(window.innerWidth/2, window.innerHeight*0.4, '#ffd700', 16), 100);
+  }
+  saveState();
+  closeModal();
+  renderHabits();
+  renderHome();
+  updateNavBadges();
+}
+
+function deleteGoal() {
+  if (!confirm('Delete this goal?')) return;
+  state.goals = state.goals.filter(g => g.id !== modalContext.editingId);
+  saveState();
+  closeModal();
+  renderHabits();
+  updateNavBadges();
+}
+
+const TIER_COLORS = {
+  common: '#7a7a82', rare: '#4a9eff', epic: '#b478e8', legendary: '#ffd700'
+};
+
+// renderGoals removed — Goals are now rendered inside the Quests tab via renderHabits()
+
+// ====== JOURNAL ======
+function openJournal() {
+  modalContext = { kind: 'journal', draftText: '', draftMood: '' };
+  renderJournal();
+}
+
+function renderJournal() {
+  document.getElementById('modal-title').textContent = '📓 JOURNAL';
+  const today = todayDate();
+  const todayEntry = (state.journal || []).find(j => j.date === today);
+  const recent = [...(state.journal || [])].sort((a, b) => b.ts - a.ts).slice(0, 10);
+  const moods = ['💪', '🔥', '✨', '😎', '🧠', '😐', '😩', '☁️'];
+
+  modalContext.draftText = modalContext.draftText || todayEntry?.text || '';
+  modalContext.draftMood = modalContext.draftMood || todayEntry?.mood || '';
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-field">
+      <label class="form-label">Today, ${prettyToday()}</label>
+      <textarea class="form-textarea" id="j-text" placeholder="What happened today? What did you learn? What's on your mind?" maxlength="2000" style="min-height:140px">${escapeHtml(modalContext.draftText)}</textarea>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Mood</label>
+      <div class="form-button-grid">
+        ${moods.map(m => `<button class="form-pill ${modalContext.draftMood === m ? 'active' : ''}" style="font-size:1.2rem;padding:0.4rem 0.6rem" onclick="setJournalMood('${m}')">${m}</button>`).join('')}
+      </div>
+    </div>
+    ${recent.length > 0 ? `
+      <div class="modal-section-label">Recent entries</div>
+      ${recent.map(j => `
+        <div class="journal-entry">
+          <div class="journal-entry-head">
+            <span class="journal-entry-date">${fmtDate(j.date)} ${j.mood || ''}</span>
+            <button class="subtask-del" onclick="deleteJournalEntry('${j.ts}')">×</button>
+          </div>
+          <div class="journal-entry-text">${escapeHtml(j.text)}</div>
+        </div>
+      `).join('')}
+    ` : ''}
+  `;
+  const footer = document.getElementById('modal-footer');
+  footer.style.display = 'flex';
+  footer.innerHTML = `
+    <button class="btn secondary" onclick="closeModal()">Cancel</button>
+    <button class="btn primary" onclick="saveJournalEntry()">${todayEntry ? 'Update' : 'Save'}</button>
+  `;
+  openModal();
+  setTimeout(() => document.getElementById('j-text')?.focus(), 100);
+}
+
+function setJournalMood(m) {
+  const txt = document.getElementById('j-text');
+  if (txt) modalContext.draftText = txt.value;
+  modalContext.draftMood = (modalContext.draftMood === m) ? '' : m;
+  renderJournal();
+}
+
+function saveJournalEntry() {
+  const text = document.getElementById('j-text').value.trim();
+  if (!text) { showToast('Write something first'); return; }
+  state.journal = state.journal || [];
+  const today = todayDate();
+  const existingIdx = state.journal.findIndex(j => j.date === today);
+  const wasNew = existingIdx < 0;
+  if (existingIdx >= 0) {
+    state.journal[existingIdx] = { ...state.journal[existingIdx], text, mood: modalContext.draftMood, ts: Date.now() };
+  } else {
+    state.journal.push({ date: today, text, mood: modalContext.draftMood, ts: Date.now() });
+    showStatGains({ REFLECTION: 1 });
+  }
+  saveState();
+  closeModal();
+  renderHome();
+  if (wasNew) showToast('Journal saved · +1 REFLECTION');
+  else showToast('Journal updated');
+}
+
+function deleteJournalEntry(ts) {
+  if (!confirm('Delete this journal entry?')) return;
+  state.journal = (state.journal || []).filter(j => String(j.ts) !== String(ts));
+  saveState();
+  renderJournal();
+}
+
+// ====== FRIENDS / LEADERBOARD ======
+function buildShareCode() {
+  const pts = computeStatPoints();
+  const total = Object.values(pts).reduce((a, b) => a + b, 0);
+  const wstreak = workoutStreak();
+  const data = {
+    n: state.settings.userName || 'Anon',
+    t: total,
+    p: pts,
+    s: wstreak,
+    g: (state.goals || []).filter(g => g.completed).length,
+    h: (state.habits || []).length,
+    d: todayDate()
+  };
+  // Base64 encode
+  try {
+    return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  } catch(e) { return ''; }
+}
+
+function parseShareCode(code) {
+  try {
+    return JSON.parse(decodeURIComponent(escape(atob(code))));
+  } catch(e) { return null; }
+}
+
+function openShareStats() {
+  const code = buildShareCode();
+  modalContext = { kind: 'share' };
+  document.getElementById('modal-title').textContent = '🕸 SHARE YOUR STATS';
+  document.getElementById('modal-body').innerHTML = `
+    <div style="padding:0.6rem 0.5rem;color:var(--text-dim);font-size:0.78rem;line-height:1.5">
+      Send this code to a friend. They paste it into their <strong style="color:var(--text)">Friends</strong> screen to see how you stack up.
+    </div>
+    <div class="form-field">
+      <textarea class="form-textarea" readonly onclick="this.select()" style="font-family:'Courier New',monospace;font-size:0.7rem;min-height:90px;color:var(--spider-amber)">${code}</textarea>
+    </div>
+    <div class="form-field" style="display:flex;gap:0.5rem">
+      <button class="btn primary" style="flex:1" onclick="copyShareCode('${code}')">📋 Copy code</button>
+    </div>
+  `;
+  document.getElementById('modal-footer').style.display = 'none';
+  openModal();
+}
+
+function copyShareCode(code) {
+  navigator.clipboard?.writeText(code).then(() => showToast('Code copied!'));
+}
+
+function openFriends() {
+  modalContext = { kind: 'friends', addOpen: false, pasteCode: '' };
+  renderFriends();
+}
+
+function renderFriends() {
+  document.getElementById('modal-title').textContent = '👥 FRIENDS · LEADERBOARD';
+  const friends = state.friends || [];
+  const myPts = computeStatPoints();
+  const myTotal = Object.values(myPts).reduce((a, b) => a + b, 0);
+  const me = { name: (state.settings.userName || 'You') + ' (you)', total: myTotal, isMe: true, streak: workoutStreak() };
+
+  const board = [me, ...friends.map(f => ({
+    name: f.name,
+    total: f.snapshot?.t || 0,
+    streak: f.snapshot?.s || 0,
+    date: f.snapshot?.d,
+    id: f.id
+  }))].sort((a, b) => b.total - a.total);
+
+  document.getElementById('modal-body').innerHTML = `
+    <div style="padding:0.5rem 0.5rem 0.3rem;display:flex;gap:0.5rem">
+      <button class="btn primary" style="flex:1" onclick="openShareStats()">🕸 Share My Code</button>
+      <button class="btn secondary" style="flex:1" onclick="toggleFriendAddMode()">+ Add Friend</button>
+    </div>
+    ${modalContext.addOpen ? `
+      <div class="form-field">
+        <label class="form-label">Friend's name</label>
+        <input class="form-input" id="f-name" type="text" placeholder="e.g. Alex" maxlength="32">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Paste their share code</label>
+        <textarea class="form-textarea" id="f-code" placeholder="Paste here..." style="font-family:'Courier New',monospace;font-size:0.7rem;min-height:90px"></textarea>
+      </div>
+      <div class="form-field" style="display:flex;gap:0.5rem">
+        <button class="btn secondary" style="flex:1" onclick="toggleFriendAddMode()">Cancel</button>
+        <button class="btn primary" style="flex:1" onclick="addFriend()">Add</button>
+      </div>
+    ` : ''}
+    <div class="modal-section-label">Leaderboard</div>
+    ${board.map((row, idx) => {
+      const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '·';
+      return `
+        <div class="leader-row ${row.isMe ? 'me' : ''}">
+          <span class="leader-rank">${medal}</span>
+          <span class="leader-pos">#${idx + 1}</span>
+          <div class="leader-name">${escapeHtml(row.name)}${row.date ? '<div class="leader-date">snapshot ' + fmtDate(row.date) + '</div>' : ''}</div>
+          <div class="leader-stats">
+            <span class="leader-total">${row.total}</span>
+            <span class="leader-streak">🔥${row.streak}</span>
+          </div>
+          ${!row.isMe && row.id ? `<button class="subtask-del" onclick="removeFriend('${row.id}')">×</button>` : ''}
+        </div>
+      `;
+    }).join('')}
+  `;
+  document.getElementById('modal-footer').style.display = 'none';
+  openModal();
+}
+
+function toggleFriendAddMode() {
+  modalContext.addOpen = !modalContext.addOpen;
+  renderFriends();
+}
+
+function addFriend() {
+  const name = document.getElementById('f-name').value.trim();
+  const code = document.getElementById('f-code').value.trim();
+  if (!name || !code) { showToast('Name and code required'); return; }
+  const parsed = parseShareCode(code);
+  if (!parsed) { showToast('Invalid code'); playSound('error'); return; }
+  state.friends = state.friends || [];
+  state.friends.push({
+    id: 'fr_' + Date.now().toString(36),
+    name,
+    addedAt: Date.now(),
+    snapshot: parsed
+  });
+  saveState();
+  modalContext.addOpen = false;
+  renderFriends();
+  showToast('Friend added · ' + parsed.n);
+  playSound('success');
+}
+
+function removeFriend(id) {
+  if (!confirm('Remove this friend?')) return;
+  state.friends = (state.friends || []).filter(f => f.id !== id);
+  saveState();
+  renderFriends();
 }
 
 // ====== DAILY LOG TIMELINE ======
@@ -7542,15 +9117,24 @@ function statCardHTML(c, pts) {
 }
 
 let _lastTotalPower = 0;
+let _lastSpiderXP = 0;
 function renderStatSheetHTML() {
   const pts = computeStatPoints();
   const total = Object.values(pts).reduce((a, b) => a + b, 0);
   const totalTier = statTierFor(total);
+  const totalXP = computeTotalXP();
+  const sl = spiderLevelFor(totalXP);
+  const bonuses = computeXPBonuses();
   setTimeout(() => {
     const el = document.querySelector('.stat-power-num');
     if (el && _lastTotalPower !== total) {
       animateNumber(el, _lastTotalPower, total, 900);
       _lastTotalPower = total;
+    }
+    const xpEl = document.querySelector('.spider-xp-num');
+    if (xpEl && _lastSpiderXP !== totalXP) {
+      animateNumber(xpEl, _lastSpiderXP, totalXP, 1000, ' XP');
+      _lastSpiderXP = totalXP;
     }
   }, 40);
 
@@ -7575,10 +9159,37 @@ function renderStatSheetHTML() {
   }).join('');
 
   return `
+    <div class="spider-level-card">
+      <div class="sl-head">
+        <div class="sl-rank">RANK</div>
+        <div class="sl-lv">LV ${sl.current.lv}</div>
+        <div class="sl-title">${sl.current.title}</div>
+      </div>
+      <div class="sl-xp-row">
+        <div class="sl-xp-num">
+          <span class="spider-xp-num">${totalXP}</span><small> XP</small>
+        </div>
+        <div class="sl-xp-next">${sl.maxed ? 'MAX RANK ★' : sl.toNext + ' XP to ' + sl.next.title}</div>
+      </div>
+      <div class="sl-xp-bar"><div class="sl-xp-fill" style="width:${Math.round(sl.progress * 100)}%"></div></div>
+      ${bonuses.breakdown.length > 0 ? `
+        <div class="sl-bonuses">
+          ${bonuses.breakdown.map(b => `
+            <div class="sl-bonus-chip">
+              <span class="sl-bonus-label">${b.label}</span>
+              <span class="sl-bonus-bonus">${b.bonus}</span>
+              <span class="sl-bonus-desc">${escapeHtml(b.desc)}</span>
+            </div>
+          `).join('')}
+          <div class="sl-bonus-total">XP ×${bonuses.multiplier.toFixed(2)}</div>
+        </div>
+      ` : `<div class="sl-bonuses"><div class="sl-no-bonus">No active bonuses · earn stat points to unlock multipliers</div></div>`}
+    </div>
+
     <div class="stat-sheet-total">
       <div>
         <div class="stat-power-num">${total}</div>
-        <div class="stat-power-tier">Total Power · <strong>${totalTier.tier.name}</strong> · Lv ${totalTier.level}</div>
+        <div class="stat-power-tier">Base Power · <strong>${totalTier.tier.name}</strong> · Lv ${totalTier.level}</div>
       </div>
       <div style="text-align:right">
         <div style="font-size:0.65rem;font-weight:800;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase">${totalTier.maxed ? 'MAX TIER ★' : totalTier.toNext + ' to ' + totalTier.next.name}</div>
@@ -7592,8 +9203,11 @@ function renderStatSheetHTML() {
 }
 
 let _lastMetaSubtotals = {};
+let _lastHomeSpiderXP = 0;
 function homeStatPreviewHTML() {
   const pts = computeStatPoints();
+  const xp = computeTotalXP();
+  const sl = spiderLevelFor(xp);
   // Show only group power subtotals on Home (compact). Full detail on Analytics.
   const cells = META_GROUPS.map(g => {
     const subtotal = g.stats.reduce((s, x) => s + (pts[x] || 0), 0);
@@ -7618,12 +9232,28 @@ function homeStatPreviewHTML() {
       if (target !== from) animateNumber(el, from, target, 700);
       _lastMetaSubtotals[g.id] = target;
     });
+    const xpEl = document.querySelector('.home-sl-xp');
+    if (xpEl && _lastHomeSpiderXP !== xp) {
+      animateNumber(xpEl, _lastHomeSpiderXP, xp, 800);
+      _lastHomeSpiderXP = xp;
+    }
   }, 30);
   return `
     <div class="home-stats-card">
       <div class="home-stats-head">
         <span class="home-stats-title">⚔ Stat Sheet</span>
         <button class="home-stats-link" onclick="switchTab('analytics')">View All →</button>
+      </div>
+      <div class="home-sl-row">
+        <div class="home-sl-left">
+          <div class="home-sl-rank">RANK</div>
+          <div class="home-sl-lv">LV ${sl.current.lv}</div>
+        </div>
+        <div class="home-sl-right">
+          <div class="home-sl-title">${sl.current.title}</div>
+          <div class="home-sl-xpbar"><div class="home-sl-xpfill" style="width:${Math.round(sl.progress * 100)}%"></div></div>
+          <div class="home-sl-xpinfo"><span class="home-sl-xp">${xp}</span> XP${sl.maxed ? ' · MAX' : ' · ' + sl.toNext + ' to LV ' + (sl.current.lv + 1)}</div>
+        </div>
       </div>
       <div class="home-meta-row">${cells}</div>
     </div>

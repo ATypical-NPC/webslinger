@@ -6056,6 +6056,157 @@ body::after {
   padding: 0.3rem 0 0.25rem;
   margin-top: 0.25rem;
 }
+
+/* ===== BOSS REMATCH ROUND BADGE ===== */
+.boss-round-badge {
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  background: rgba(255, 100, 0, 0.18);
+  color: #ff6400;
+  border: 1px solid rgba(255, 100, 0, 0.45);
+  border-radius: 5px;
+  padding: 2px 7px;
+  text-transform: uppercase;
+  animation: rematchPulse 2s ease-in-out infinite;
+}
+@keyframes rematchPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,100,0,0); }
+  50%       { box-shadow: 0 0 8px 2px rgba(255,100,0,0.4); }
+}
+
+/* ===== QUEST SECTIONS (always-visible layout) ===== */
+.quest-section { margin-bottom: 0.25rem; }
+.quest-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem 0.4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 0.2rem;
+}
+.quest-section-icon { font-size: 0.85rem; opacity: 0.75; }
+.quest-section-title {
+  flex: 1;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.quest-section-count {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 1px 7px;
+}
+
+/* ===== ANIMATED BANNERS ===== */
+/* Ensure banner-option has stacking context for ::before */
+.banner-option {
+  position: relative;
+  overflow: hidden;
+}
+.banner-option::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Classic — white shimmer (same as base .profile-banner::before) */
+.profile-banner.banner-classic::before,
+.banner-option.banner-classic::before {
+  background-image: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.16) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: profileShimmer 3.5s linear infinite;
+}
+/* Iron Spider — gold gleam */
+.profile-banner.banner-iron::before,
+.banner-option.banner-iron::before {
+  background-image: linear-gradient(115deg, transparent 30%, rgba(255,198,73,0.35) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: profileShimmer 2.2s ease-in-out infinite;
+}
+/* Sunset — warm breathing glow */
+.profile-banner.banner-sunset::before,
+.banner-option.banner-sunset::before {
+  background-image: radial-gradient(ellipse at 50% 50%, rgba(255,122,42,0.4) 0%, transparent 70%);
+  animation: bannerBreath 2.8s ease-in-out infinite;
+}
+/* Aurora — iridescent shimmer */
+.profile-banner.banner-aurora::before,
+.banner-option.banner-aurora::before {
+  background-image: linear-gradient(115deg, transparent 35%, rgba(180,120,232,0.38) 50%, transparent 65%);
+  background-size: 220% 100%;
+  animation: profileShimmer 2s linear infinite;
+}
+/* Forest — green life pulse */
+.profile-banner.banner-forest::before,
+.banner-option.banner-forest::before {
+  background-image: radial-gradient(ellipse at 50% 60%, rgba(29,165,122,0.45) 0%, transparent 70%);
+  animation: bannerBreath 3.2s ease-in-out infinite;
+}
+/* Venom — dark ripple from center */
+.profile-banner.banner-venom::before,
+.banner-option.banner-venom::before {
+  background-image: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 60%);
+  animation: bannerVenom 2.2s ease-in-out infinite;
+}
+/* Symbiote — red tendril rising */
+.profile-banner.banner-symbiote::before,
+.banner-option.banner-symbiote::before {
+  background-image: linear-gradient(180deg, transparent 0%, rgba(255,0,51,0.3) 50%, transparent 100%);
+  background-size: 100% 200%;
+  animation: bannerScroll 1.6s ease-in-out infinite;
+}
+/* Pure Gold — fast double shimmer */
+.profile-banner.banner-gold::before,
+.banner-option.banner-gold::before {
+  background-image: linear-gradient(115deg, transparent 25%, rgba(255,215,0,0.5) 40%, transparent 55%, rgba(255,215,0,0.2) 70%, transparent 85%);
+  background-size: 300% 100%;
+  animation: profileShimmer 1.6s linear infinite;
+}
+/* 2099 — digital scanline sweep */
+.profile-banner.banner-2099::before,
+.banner-option.banner-2099::before {
+  background-image: linear-gradient(180deg, transparent 48%, rgba(0,212,255,0.18) 50%, transparent 52%);
+  background-size: 100% 500%;
+  animation: bannerScanline 1s linear infinite;
+}
+/* Multiverse — full-spectrum sweep */
+.profile-banner.banner-multiverse::before,
+.banner-option.banner-multiverse::before {
+  background-image: linear-gradient(115deg,
+    rgba(230,36,41,0.25) 0%, rgba(255,215,0,0.25) 25%,
+    rgba(0,212,255,0.25) 50%, rgba(180,120,232,0.25) 75%,
+    rgba(230,36,41,0.25) 100%);
+  background-size: 300% 100%;
+  animation: bannerMultiverse 2.8s linear infinite;
+}
+
+@keyframes bannerBreath {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.08); }
+}
+@keyframes bannerVenom {
+  0%, 100% { opacity: 0.15; transform: scale(0.85); }
+  50%       { opacity: 0.55; transform: scale(1.25); }
+}
+@keyframes bannerScroll {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 0% 100%; }
+}
+@keyframes bannerScanline {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 0% 100%; }
+}
+@keyframes bannerMultiverse {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
 </style>
 </head>
 <body>
@@ -6494,7 +6645,8 @@ let state = {
   lastSpiderLv: 1,
   ui: { tab: 'workouts', scheduleView: 'list', calMonth: null },
   bossProgress: {},
-  activeBossId: 'shocker'
+  activeBossId: 'shocker',
+  bossRound: 1
 };
 
 // Focus mode state (not persisted)
@@ -6831,6 +6983,7 @@ function loadState() {
         // First run: auto-activate Shocker if no boss is set
         parsed.activeBossId = 'shocker';
       }
+      if (!parsed.bossRound) parsed.bossRound = 1;
       state = parsed;
     }
   } catch(e) { console.warn('Could not load state', e); }
@@ -7169,7 +7322,7 @@ function renderProfileBody() {
 
   document.getElementById('modal-body').innerHTML = `
     <div class="profile-card">
-      <div class="profile-banner" style="--profile-bg:${banner.gradient}"></div>
+      <div class="profile-banner banner-${banner.id}" style="--profile-bg:${banner.gradient}"></div>
       <div class="profile-body">
         <div class="profile-avatar" onclick="openPFPPicker()" title="Change picture" style="cursor:pointer">${profilePicHTML(58)}</div>
         <div class="profile-name-row">
@@ -7265,7 +7418,7 @@ function openBannerPicker() {
       ${BANNERS.map(b => {
         const unlocked = sl.current.lv >= b.unlockLv;
         return `
-          <div class="banner-option ${active === b.id ? 'active' : ''} ${!unlocked ? 'locked' : ''}"
+          <div class="banner-option banner-${b.id} ${active === b.id ? 'active' : ''} ${!unlocked ? 'locked' : ''}"
                style="background:${b.gradient}"
                ${unlocked ? `onclick="setActiveBanner('${b.id}')"` : ''}>
             <span class="banner-option-name">${b.name}${!unlocked ? ' · LV ' + b.unlockLv : ''}</span>
@@ -8328,7 +8481,8 @@ function confirmReset() {
   lastSpiderLv: 1,
       ui: { tab: state.ui?.tab || 'workouts', scheduleView: 'list', calMonth: null },
       bossProgress: {},
-      activeBossId: 'shocker'
+      activeBossId: 'shocker',
+      bossRound: 1
     };
     saveState();
     renderAll();
@@ -9094,6 +9248,7 @@ function toggleTaskDone(id) {
   renderSchedule();
   renderHome();
   if (nowCompleted) {
+    playSound('complete');
     const gains = { CLARITY: 1 };
     // On-time bonus for non-recurring
     if (!task.recurring && task.dueDate) {
@@ -9114,6 +9269,8 @@ function toggleTaskDone(id) {
       const btn = document.querySelector(`.task-row [onclick*="${id}"]`);
       if (btn) burstFromElement(btn, '#b478e8', 10);
     }, 50);
+  } else {
+    playSound('tap');
   }
 }
 
@@ -9478,10 +9635,12 @@ function toggleHabit(id) {
   h.history = h.history || [];
   const i = h.history.indexOf(today);
   let nowCompleted = false;
-  if (i >= 0) h.history.splice(i, 1);
-  else {
+  if (i >= 0) {
+    h.history.splice(i, 1);
+    playSound('tap');
+  } else {
     h.history.push(today); nowCompleted = true;
-    playSound('select');
+    playSound('complete');
     // Burst from the check button
     setTimeout(() => {
       const btn = document.querySelector(`.habit-row [onclick*="${id}"]`);
@@ -9540,19 +9699,11 @@ function applyQuestViewBg() {
 
 function renderHabits() {
   const view = document.getElementById('tab-habits');
-  const mode = state.ui.questView || 'daily';
   const habits = state.habits || [];
   const goals = state.goals || [];
   const sideQuests = goals.filter(g => g.questType === 'side');
   const mainQuests = goals.filter(g => g.questType === 'main');
 
-  const counts = {
-    daily: habits.length,
-    side: sideQuests.filter(g => !g.completed).length,
-    main: mainQuests.filter(g => !g.completed).length
-  };
-
-  // Sort: legendary first, then by progress
   const tierRank = { legendary: 0, epic: 1, rare: 2, common: 3 };
   const sortGoals = arr => [...arr].sort((a, b) =>
     (Number(a.completed) - Number(b.completed)) ||
@@ -9560,26 +9711,19 @@ function renderHabits() {
     ((b.progress || 0) - (a.progress || 0))
   );
 
-  const addBtn = () => {
-    if (mode === 'daily') return `<button class="section-action" style="background:#ff9a3c;color:#1a0e00" onclick="openHabitForm()">+ New Daily</button>`;
-    if (mode === 'side')  return `<button class="section-action" style="background:linear-gradient(180deg,#00d4ff,#0090b8);color:#001620" onclick="openGoalForm(null,'side')">+ New Side</button>`;
-    return `<button class="section-action" style="background:linear-gradient(180deg,#e62429,#a8121a);color:white" onclick="openGoalForm(null,'main')">+ New Main</button>`;
-  };
+  const habitsDoneToday = habits.filter(h => (h.history || []).includes(todayDate())).length;
 
-  let body = '';
-  if (mode === 'daily') {
-    body = habits.length === 0
-      ? `<div class="empty-row" style="padding:3rem 0">No daily quests yet.<br>Tap <strong style="color:#ff9a3c">+ New Daily</strong> to start your saga.</div>`
-      : habits.map(habitRowHTML).join('');
-  } else if (mode === 'side') {
-    body = sideQuests.length === 0
-      ? `<div class="empty-row" style="padding:3rem 0">No side quests yet.<br>Small achievable goals (2–3 weeks).<br>e.g. <em>finish a book · learn 3 chords</em></div>`
-      : sortGoals(sideQuests).map(goalCardHTML).join('');
-  } else { // main
-    body = mainQuests.length === 0
-      ? `<div class="empty-row" style="padding:3rem 0">No main quests yet.<br>Year-long sagas.<br>e.g. <em>build a PC · save $1000 · run a marathon</em></div>`
-      : sortGoals(mainQuests).map(goalCardHTML).join('');
-  }
+  const habitBody = habits.length === 0
+    ? `<div class="empty-row" style="padding:1.5rem 0">No daily quests yet.<br>Tap <strong style="color:#ff9a3c">+ New</strong> to start your saga.</div>`
+    : habits.map(habitRowHTML).join('');
+
+  const sideBody = sideQuests.length === 0
+    ? `<div class="empty-row" style="padding:1.2rem 0;font-size:0.78rem">No side quests yet — small goals, 2–3 weeks.<br><em style="opacity:.6">e.g. finish a book · learn 3 chords</em></div>`
+    : sortGoals(sideQuests).map(goalCardHTML).join('');
+
+  const mainBody = mainQuests.length === 0
+    ? `<div class="empty-row" style="padding:1.2rem 0;font-size:0.78rem">No main quests yet — year-long sagas.<br><em style="opacity:.6">e.g. build a PC · save $1000 · run a marathon</em></div>`
+    : sortGoals(mainQuests).map(goalCardHTML).join('');
 
   view.innerHTML = `
     <div class="section-header">
@@ -9587,15 +9731,38 @@ function renderHabits() {
         <div class="section-title">Quests</div>
         <div class="section-sub">Daily · Side · Main</div>
       </div>
-      ${addBtn()}
     </div>
     ${bossArenaCardHTML()}
-    <div class="view-toggle view-toggle-qv">
-      <button class="qv-btn qv-daily-btn ${mode === 'daily' ? 'active' : ''}" onclick="setQuestView('daily')"><span class="qv-ic">↻</span><span class="qv-lbl">Daily</span><span class="vt-count">× ${counts.daily}</span></button>
-      <button class="qv-btn qv-side-btn ${mode === 'side' ? 'active' : ''}" onclick="setQuestView('side')"><span class="qv-ic">⚡</span><span class="qv-lbl">Side</span><span class="vt-count">× ${counts.side}</span></button>
-      <button class="qv-btn qv-main-btn ${mode === 'main' ? 'active' : ''}" onclick="setQuestView('main')"><span class="qv-ic">🏆</span><span class="qv-lbl">Main</span><span class="vt-count">× ${counts.main}</span></button>
+
+    <div class="quest-section">
+      <div class="quest-section-header">
+        <span class="quest-section-icon">↻</span>
+        <span class="quest-section-title">Daily Quests</span>
+        <span class="quest-section-count">${habitsDoneToday}/${habits.length}</span>
+        <button class="section-action" style="background:#ff9a3c;color:#1a0e00;padding:0.3rem 0.7rem;font-size:0.65rem" onclick="openHabitForm()">+ New</button>
+      </div>
+      ${habitBody}
     </div>
-    ${body}
+
+    <div class="quest-section">
+      <div class="quest-section-header">
+        <span class="quest-section-icon">⚡</span>
+        <span class="quest-section-title">Side Quests</span>
+        <span class="quest-section-count">${sideQuests.filter(g => !g.completed).length} active</span>
+        <button class="section-action" style="background:linear-gradient(180deg,#00d4ff,#0090b8);color:#001620;padding:0.3rem 0.7rem;font-size:0.65rem" onclick="openGoalForm(null,'side')">+ New</button>
+      </div>
+      ${sideBody}
+    </div>
+
+    <div class="quest-section">
+      <div class="quest-section-header">
+        <span class="quest-section-icon">🏆</span>
+        <span class="quest-section-title">Main Quests</span>
+        <span class="quest-section-count">${mainQuests.filter(g => !g.completed).length} active</span>
+        <button class="section-action" style="background:linear-gradient(180deg,#e62429,#a8121a);color:white;padding:0.3rem 0.7rem;font-size:0.65rem" onclick="openGoalForm(null,'main')">+ New</button>
+      </div>
+      ${mainBody}
+    </div>
   `;
 }
 
@@ -10316,17 +10483,27 @@ function getActiveBoss() {
   return getBossById(id);
 }
 
+// Returns HP ceiling for current rematch round (scales up 75% per round after round 1)
+function bossMaxHp(bossId) {
+  const boss = getBossById(bossId);
+  if (!boss) return 0;
+  const round = state.bossRound || 1;
+  return round <= 1 ? boss.maxHp : Math.floor(boss.maxHp * (1 + (round - 1) * 0.75));
+}
+
 function bossCurrentHp(bossId) {
   const boss = getBossById(bossId);
   if (!boss) return 0;
+  const maxHp = bossMaxHp(bossId);
   const prog = (state.bossProgress || {})[bossId];
-  if (!prog) return boss.maxHp;
+  if (!prog) return maxHp;
   if (prog.defeated) return 0;
-  return Math.max(0, prog.hp !== undefined ? prog.hp : boss.maxHp);
+  return Math.max(0, prog.hp !== undefined ? prog.hp : maxHp);
 }
 
 function bossPhaseFor(boss, hp) {
-  const pct = hp / boss.maxHp;
+  const maxHp = bossMaxHp(boss.id);
+  const pct = hp / maxHp;
   // Walk phases in reverse: find the highest-threshold phase we've fallen below
   for (let i = boss.phases.length - 1; i >= 0; i--) {
     if (pct <= boss.phases[i].threshold) return boss.phases[i];
@@ -10367,7 +10544,7 @@ function dealBossDamage(dmg, sourceEl) {
   const boss = getActiveBoss();
   if (!boss) return;
   state.bossProgress = state.bossProgress || {};
-  const prog = state.bossProgress[boss.id] || { hp: boss.maxHp, defeated: false };
+  const prog = state.bossProgress[boss.id] || { hp: bossMaxHp(boss.id), defeated: false };
   if (prog.defeated) return;
 
   const prevHp = prog.hp !== undefined ? prog.hp : boss.maxHp;
@@ -10437,12 +10614,15 @@ function defeatBoss(bossId) {
     ts: Date.now()
   });
 
-  // Auto-unlock next boss
+  // Auto-unlock next boss, or start rematch if all defeated
   const nextBoss = BOSSES.find(b => b.unlock?.bossDefeated === bossId);
   if (nextBoss && !state.bossProgress[nextBoss.id]?.defeated) {
     state.activeBossId = nextBoss.id;
   } else if (!nextBoss) {
-    state.activeBossId = null; // all bosses defeated
+    // Last boss cleared — start NG+ rematch with scaled HP
+    state.bossRound = (state.bossRound || 1) + 1;
+    state.bossProgress = {}; // wipe HP/defeated flags for all bosses
+    state.activeBossId = 'shocker'; // restart from Shocker
   }
 
   saveState();
@@ -10495,28 +10675,32 @@ function hideBossDefeatOverlay() {
 function bossArenaCardHTML() {
   const boss = getActiveBoss();
 
-  // All bosses defeated
-  if (!boss && BOSSES.every(b => (state.bossProgress || {})[b.id]?.defeated)) {
+  const round = state.bossRound || 1;
+
+  // Legacy: all bosses defeated with no rematch started yet (edge case for existing saves)
+  if (!boss) {
     return `
       <div class="boss-section-label">⚔ Boss Arena</div>
-      <div class="boss-arena-card" style="--boss-color:#ffd700;--boss-bg:#100a00" onclick="openBossRoster()">
+      <div class="boss-arena-card" style="--boss-color:#ffd700;--boss-bg:#100a00" onclick="startBossRematch()">
         <div class="boss-arena-top">
           <div class="boss-arena-icon" style="filter:drop-shadow(0 0 10px #ffd700)">🏆</div>
           <div class="boss-arena-info">
             <div class="boss-arena-label">All Villains Defeated</div>
             <div class="boss-arena-name" style="color:#ffd700;text-shadow:0 0 16px #ffd700">LEGENDARY</div>
-            <div class="boss-arena-villain">You are the Spider-Verse</div>
+            <div class="boss-arena-villain">Tap to start NG+ Rematch</div>
           </div>
         </div>
       </div>
     `;
   }
 
-  if (!boss) return '';
-
+  const maxHp = bossMaxHp(boss.id);
   const hp = bossCurrentHp(boss.id);
-  const hpPct = Math.round((hp / boss.maxHp) * 100);
+  const hpPct = Math.round((hp / maxHp) * 100);
   const phase = bossPhaseFor(boss, hp);
+  const roundBadge = round > 1
+    ? `<div class="boss-round-badge">⚠ NG+${round - 1}</div>`
+    : '';
 
   // Phase markers at 50% and 85% (threshold 0.5 and 0.15)
   const phaseMarks = boss.phases
@@ -10530,7 +10714,7 @@ function bossArenaCardHTML() {
       <div class="boss-arena-top">
         <div class="boss-arena-icon">${boss.icon}</div>
         <div class="boss-arena-info">
-          <div class="boss-arena-label">Active Villain</div>
+          <div class="boss-arena-label">Active Villain ${roundBadge}</div>
           <div class="boss-arena-name">${boss.name}</div>
           <div class="boss-arena-villain">${boss.villain}</div>
         </div>
@@ -10542,7 +10726,7 @@ function bossArenaCardHTML() {
           <div class="boss-hp-fill" style="width:${hpPct}%"></div>
           ${phaseMarks}
         </div>
-        <div class="boss-hp-value">${hp}/${boss.maxHp}</div>
+        <div class="boss-hp-value">${hp}/${maxHp}</div>
       </div>
       <div class="boss-arena-hint">Complete tasks &amp; quests to deal damage · tap for full roster</div>
     </div>
@@ -10554,9 +10738,11 @@ function openBossRoster() {
   document.getElementById('modal-title').textContent = '⚔ VILLAIN ROSTER';
   document.getElementById('modal-footer').style.display = 'none';
 
+  const rosterRound = state.bossRound || 1;
   const rows = BOSSES.map(boss => {
+    const maxHp = bossMaxHp(boss.id);
     const hp = bossCurrentHp(boss.id);
-    const hpPct = Math.round((hp / boss.maxHp) * 100);
+    const hpPct = Math.round((hp / maxHp) * 100);
     const defeated = !!((state.bossProgress || {})[boss.id]?.defeated);
     const isActive = state.activeBossId === boss.id && !defeated;
     const unlocked = isBossUnlocked(boss);
@@ -10581,7 +10767,7 @@ function openBossRoster() {
         <div class="boss-roster-icon">${boss.icon}</div>
         <div class="boss-roster-body">
           <div class="boss-roster-name" style="color:${unlocked || defeated ? boss.color : 'var(--text-dim)'}">${boss.name}</div>
-          <div class="boss-roster-meta">${boss.villain} · ${boss.maxHp} HP</div>
+          <div class="boss-roster-meta">${boss.villain} · ${maxHp} HP${rosterRound > 1 ? ` <span style="color:#ff6400;font-size:0.6rem">(NG+${rosterRound-1})</span>` : ''}</div>
           ${unlockHint}
           ${!defeated ? `
             <div class="boss-roster-hp">
@@ -10603,6 +10789,7 @@ function openBossRoster() {
       Complete <strong style="color:var(--text)">tasks</strong> and <strong style="color:var(--text)">quests</strong> to deal damage.
       Your DISCIPLINE + CLARITY stats multiply damage.
       Current hit: ~<strong style="color:var(--spider-amber)">${dmgPreview} HP</strong> per medium task.
+      ${rosterRound > 1 ? `<br><span style="color:#ff6400;font-weight:800">⚠ NG+${rosterRound-1} — All bosses are ${Math.round((1 + (rosterRound-1)*0.75)*100)}% HP</span>` : ''}
     </div>
     <div class="boss-roster-grid">${rows}</div>
   `;
@@ -10617,6 +10804,19 @@ function setActiveBoss(bossId) {
   closeModal();
   if (state.ui.tab === 'habits') renderHabits();
   showToast(`${boss.name} is now the active villain`);
+}
+
+function startBossRematch() {
+  state.bossRound = (state.bossRound || 1) + 1;
+  state.bossProgress = {};
+  state.activeBossId = 'shocker';
+  saveState();
+  playSound('achievement');
+  haptic('levelUp');
+  const ng = state.bossRound - 1;
+  showToast(`⚠ NG+${ng} — Villains return at ${Math.round((1 + (ng)*0.75)*100)}% HP!`);
+  if (state.ui.tab === 'habits') renderHabits();
+  if (state.ui.tab === 'home') renderHome();
 }
 
 // renderGoals removed — Goals are now rendered inside the Quests tab via renderHabits()

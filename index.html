@@ -48,7 +48,11 @@ html, body {
   color: var(--text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden; /* prevent horizontal scroll flash during tab animation */
 }
+/* Hide scrollbar chrome on all elements — keeps scrolling functional but invisible */
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
 
 body {
   padding: 1rem 1rem 5.5rem;
@@ -2449,12 +2453,16 @@ body.tab-analytics .nav-btn.active{ color: #2cd6a4; }
   background-size: 200% 100%;
   box-shadow: 0 0 12px var(--spider-amber);
   border-radius: 4px;
-  transition: width 0.8s cubic-bezier(0.16, 1.1, 0.3, 1);
-  animation: barFlow 2.4s ease-in-out infinite, slXPShimmer 2s linear infinite;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: xpBarSweep 2.6s cubic-bezier(0.3, 0, 0.7, 1) infinite, slXPShimmer 2s linear infinite;
 }
 @keyframes slXPShimmer {
   from { background-position: 0 0; }
   to   { background-position: 200% 0; }
+}
+@keyframes xpBarSweep {
+  0%   { transform: translateX(calc(-1 * var(--bar-w, 700px))); }
+  100% { transform: translateX(calc(2 * var(--bar-w, 700px))); }
 }
 .sl-bonuses {
   display: flex;
@@ -6207,6 +6215,193 @@ body::after {
   0%   { background-position: 0% 50%; }
   100% { background-position: 100% 50%; }
 }
+
+/* ===== SPIDER-RANK BADGE ===== */
+.spider-rank-badge {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  padding: 0.18rem 0.55rem; border-radius: 4px;
+  font-size: 0.68rem; font-weight: 900; letter-spacing: 1.8px;
+  text-transform: uppercase; border: 1px solid currentColor;
+  animation: rankGlow 2.8s ease-in-out infinite;
+}
+@keyframes rankGlow {
+  0%,100% { box-shadow: 0 0 6px currentColor; }
+  50%      { box-shadow: 0 0 14px currentColor; }
+}
+.rank-e { color:#888; background:rgba(136,136,136,0.12); }
+.rank-d { color:#4caf50; background:rgba(76,175,80,0.12); }
+.rank-c { color:#2196f3; background:rgba(33,150,243,0.12); }
+.rank-b { color:#b478e8; background:rgba(180,120,232,0.12); }
+.rank-a { color:#ffd700; background:rgba(255,215,0,0.12); }
+.rank-s { color:#e62429; background:rgba(230,36,41,0.12); }
+.rank-n { color:#fff; background:linear-gradient(135deg,rgba(40,0,80,0.6),rgba(0,0,0,0.8)); border-color:#ffd700 !important; animation: nationalShine 2s linear infinite; }
+@keyframes nationalShine {
+  0%   { box-shadow: 0 0 10px #ffd700, 0 0 30px rgba(255,215,0,0.3); }
+  50%  { box-shadow: 0 0 20px #fff,    0 0 40px rgba(255,215,0,0.5); }
+  100% { box-shadow: 0 0 10px #ffd700, 0 0 30px rgba(255,215,0,0.3); }
+}
+.home-rank-row {
+  display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.3rem;
+}
+
+/* ===== PRESTIGE BADGE ===== */
+.prestige-badge {
+  display: inline-flex; align-items: center; gap: 0.2rem;
+  padding: 0.12rem 0.45rem; border-radius: 3px;
+  font-size: 0.58rem; font-weight: 900; letter-spacing: 1.5px;
+  text-transform: uppercase; margin-left: 0.3rem;
+}
+.prestige-bronze  { background:rgba(205,127,50,0.18); border:1px solid #cd7f32; color:#cd7f32; }
+.prestige-silver  { background:rgba(192,192,192,0.18); border:1px solid #c0c0c0; color:#c0c0c0; }
+.prestige-gold    { background:rgba(255,215,0,0.18);   border:1px solid #ffd700; color:#ffd700; box-shadow:0 0 8px rgba(255,215,0,0.35); animation:rankGlow 2s infinite; }
+.prestige-obsidian{ background:rgba(100,0,200,0.25);   border:1px solid #9b30ff; color:#cc80ff; box-shadow:0 0 10px rgba(155,48,255,0.4); animation:rankGlow 2s infinite; }
+
+/* ===== REACTIVE WEB CORNERS ===== */
+.web-corner       { transition: opacity 1.8s ease; }
+#web-extra-tr, #web-extra-bl {
+  position: fixed; width: 150px; height: 150px;
+  pointer-events: none; z-index: 0; opacity: 0;
+  transition: opacity 2s ease;
+}
+#web-extra-tr { top: 0; right: 0; transform: scaleX(-1); }
+#web-extra-bl { bottom: 0; left: 0; transform: rotate(180deg) scaleX(-1); }
+
+/* ===== RADAR / SPIDER CHART ===== */
+.radar-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0.8rem 0 0.3rem;
+}
+.radar-title {
+  font-size: 0.62rem; font-weight: 900; letter-spacing: 2px;
+  color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.6rem;
+}
+.radar-svg { overflow: visible; }
+.radar-grid { stroke: rgba(255,255,255,0.07); stroke-width: 1; fill: none; }
+.radar-axis { stroke: rgba(255,255,255,0.12); stroke-width: 1; }
+.radar-poly {
+  fill: rgba(230,36,41,0.18); stroke: #e62429; stroke-width: 1.5;
+  filter: drop-shadow(0 0 4px rgba(230,36,41,0.4));
+  animation: radarIn 0.7s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes radarIn {
+  from { opacity: 0; transform: scale(0.3); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.radar-label { font-size: 9px; font-weight: 900; letter-spacing: 1px; text-anchor: middle; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; }
+.radar-val   { font-size: 10px; font-weight: 900; fill: #fff; text-anchor: middle; font-family: 'Rajdhani', sans-serif; }
+
+/* ===== GADGET LOADOUT ===== */
+.gadget-loadout-header {
+  display: flex; align-items: center; gap: 0.8rem;
+  padding: 0.65rem 0.9rem 0.55rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.gadget-slots-info { font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; color: var(--text-dim); flex: 1; }
+.gadget-slots-bar  { display: flex; gap: 0.35rem; }
+.gadget-slot       { width: 28px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.08); transition: background 0.3s; }
+.gadget-slot.filled { background: var(--red); }
+.gadget-list       { display: flex; flex-direction: column; }
+.gadget-card {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+  position: relative; cursor: default;
+}
+.gadget-card.owned { cursor: pointer; }
+.gadget-card.owned:active { background: rgba(255,255,255,0.03); }
+.gadget-card.equipped {
+  background: color-mix(in srgb, var(--gadget-color) 8%, transparent);
+  border-left: 3px solid var(--gadget-color);
+}
+.gadget-card.locked { opacity: 0.42; }
+.gadget-icon  { font-size: 1.5rem; width: 2.1rem; text-align: center; flex-shrink: 0; margin-top: 0.1rem; }
+.gadget-info  { flex: 1; min-width: 0; }
+.gadget-name  { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.3px; margin-bottom: 0.2rem; transition: color 0.2s; }
+.gadget-card.equipped .gadget-name { color: var(--gadget-color); }
+.gadget-passive { font-size: 0.63rem; color: var(--text-dim); line-height: 1.4; }
+.gadget-badge {
+  font-size: 0.52rem; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 0.12rem 0.38rem; border-radius: 3px; flex-shrink: 0; align-self: center;
+}
+.gadget-badge.equipped-tag { background: var(--gadget-color); color: #000; }
+.gadget-badge.tap-tag      { border: 1px solid rgba(255,255,255,0.15); color: var(--text-dim); }
+/* Compact equipped chips on home stat card */
+.equipped-gadgets-row { display: flex; gap: 0.4rem; flex-wrap: wrap; padding: 0 0 0.5rem; }
+.equipped-chip {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  padding: 0.15rem 0.5rem; border-radius: 12px; font-size: 0.6rem;
+  font-weight: 800; letter-spacing: 0.5px; cursor: pointer;
+  border: 1px solid var(--chip-color, rgba(255,255,255,0.15));
+  color: var(--chip-color, var(--text-dim));
+  background: color-mix(in srgb, var(--chip-color, white) 8%, transparent);
+  transition: opacity 0.15s;
+}
+.equipped-chip:active { opacity: 0.7; }
+
+/* ===== HOME ALERTS ===== */
+.home-alerts { display:flex; flex-direction:column; gap:0.3rem; margin:0 0 0.65rem; }
+.home-alert { display:flex; align-items:center; gap:0.55rem; padding:0.5rem 0.8rem; border-radius:9px; font-size:0.72rem; font-weight:800; letter-spacing:0.2px; cursor:pointer; transition:opacity 0.15s; }
+.home-alert:active { opacity:0.75; }
+.home-alert-red    { background:rgba(230,36,41,0.1);  border:1px solid rgba(230,36,41,0.28);  color:#ff7070; }
+.home-alert-amber  { background:rgba(255,176,40,0.1); border:1px solid rgba(255,176,40,0.28); color:var(--spider-amber); }
+.home-alert-blue   { background:rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.25);  color:#00d4ff; }
+.home-alert-green  { background:rgba(44,214,164,0.08);border:1px solid rgba(44,214,164,0.25); color:#2cd6a4; }
+.home-alert-cta    { margin-left:auto; font-size:0.62rem; opacity:0.65; flex-shrink:0; }
+
+/* ===== ONBOARDING ===== */
+.ob-dots { display:flex; gap:0.4rem; justify-content:center; margin-bottom:1.1rem; }
+.ob-dot  { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.15); transition:background 0.3s; }
+.ob-dot.active { background:var(--red); box-shadow:0 0 6px var(--red); }
+.ob-title { font-size:1.15rem; font-weight:900; letter-spacing:0.5px; margin-bottom:0.35rem; }
+.ob-sub { font-size:0.78rem; color:var(--text-dim); line-height:1.55; margin-bottom:1rem; }
+.ob-field { width:100%; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text); padding:0.65rem 0.85rem; border-radius:9px; font-size:0.92rem; font-family:'Rajdhani',sans-serif; margin-bottom:0.5rem; outline:none; box-sizing:border-box; }
+.ob-field:focus { border-color:var(--red); }
+.ob-habit-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.45rem; margin-bottom:0.55rem; }
+.ob-habit-opt { padding:0.55rem 0.5rem; border-radius:8px; border:1px solid var(--border); cursor:pointer; font-size:0.75rem; font-weight:700; text-align:center; background:var(--bg-elevated); transition:border-color 0.15s,background 0.15s; }
+.ob-habit-opt.selected { border-color:var(--spider-amber); background:rgba(255,176,40,0.1); color:var(--spider-amber); }
+
+/* ===== PR BADGE on exercises ===== */
+.ex-pb { display:inline-flex; align-items:center; gap:0.18rem; font-size:0.56rem; font-weight:900; letter-spacing:0.8px; text-transform:uppercase; color:var(--spider-amber); background:rgba(255,176,40,0.1); border:1px solid rgba(255,176,40,0.3); padding:0.07rem 0.32rem; border-radius:3px; margin-left:0.3rem; vertical-align:middle; }
+
+/* ===== COMBINED HEATMAP (Habits tab) ===== */
+.activity-heatmap-card { background:var(--bg-card); border-radius:12px; border:1px solid var(--border); margin:0.5rem 0 1rem; overflow:hidden; }
+.activity-heatmap-head { display:flex; align-items:center; justify-content:space-between; padding:0.65rem 0.9rem 0.5rem; border-bottom:1px solid rgba(255,255,255,0.05); }
+.activity-heatmap-title { font-size:0.7rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; }
+.activity-heatmap-sub { font-size:0.6rem; color:var(--text-dim); }
+.activity-heatmap-grid { display:grid; grid-auto-flow:column; grid-template-rows:repeat(7,1fr); gap:2px; padding:0.6rem 0.9rem; overflow-x:auto; scrollbar-width:none; }
+.activity-heatmap-grid::-webkit-scrollbar { display:none; }
+.act-cell { width:10px; height:10px; border-radius:2px; background:rgba(255,255,255,0.05); }
+.act-cell.l1 { background:rgba(255,154,60,0.3); }
+.act-cell.l2 { background:rgba(255,154,60,0.55); }
+.act-cell.l3 { background:rgba(255,154,60,0.8); }
+.act-cell.full { background:#ff9a3c; box-shadow:0 0 4px rgba(255,154,60,0.5); }
+.act-cell.today-ring { outline:1px solid rgba(255,255,255,0.4); outline-offset:1px; }
+
+/* ===== WEEKLY RECAP ===== */
+.recap-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.55rem; margin-bottom:0.8rem; }
+.recap-stat { background:var(--bg-elevated); border-radius:9px; padding:0.75rem 0.6rem; text-align:center; }
+.recap-stat-val { font-size:1.5rem; font-weight:900; font-family:'Orbitron',monospace; color:var(--red); line-height:1; }
+.recap-stat-lbl { font-size:0.58rem; font-weight:800; letter-spacing:1px; color:var(--text-dim); text-transform:uppercase; margin-top:0.25rem; }
+.recap-hl { padding:0.55rem 0.8rem; border-left:3px solid var(--red); background:rgba(230,36,41,0.07); border-radius:0 8px 8px 0; font-size:0.74rem; margin-bottom:0.45rem; line-height:1.45; }
+
+/* ===== WEIGHT LOG ===== */
+.weight-card { background:var(--bg-card); border-radius:12px; border:1px solid var(--border); margin-bottom:1rem; overflow:hidden; }
+.weight-card-head { display:flex; align-items:center; justify-content:space-between; padding:0.65rem 0.9rem 0.5rem; border-bottom:1px solid rgba(255,255,255,0.05); }
+.weight-card-title { font-size:0.7rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; }
+.weight-entry-row { display:flex; align-items:center; gap:0.45rem; padding:0.65rem 0.9rem; border-bottom:1px solid rgba(255,255,255,0.04); }
+.weight-num-input { width:80px; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text); padding:0.5rem 0.65rem; border-radius:8px; font-size:0.95rem; font-family:'Rajdhani',sans-serif; outline:none; text-align:center; }
+.weight-num-input:focus { border-color:var(--red); }
+.weight-unit-pill { padding:0.38rem 0.65rem; border-radius:6px; border:1px solid var(--border); background:var(--bg-elevated); color:var(--text-dim); font-size:0.68rem; font-weight:800; cursor:pointer; letter-spacing:0.5px; }
+.weight-unit-pill.on { border-color:var(--red); background:rgba(230,36,41,0.1); color:var(--red); }
+.weight-log-list { padding:0 0.9rem 0.3rem; max-height:130px; overflow-y:auto; scrollbar-width:none; }
+.weight-log-list::-webkit-scrollbar { display:none; }
+.weight-log-entry { display:flex; justify-content:space-between; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.72rem; }
+.weight-log-val { font-family:'Orbitron',monospace; font-weight:900; font-size:0.78rem; }
+.weight-log-date { color:var(--text-dim); }
+.weight-log-del { color:var(--text-dim); cursor:pointer; padding:0.1rem 0.25rem; font-size:0.62rem; opacity:0.5; }
+.weight-log-del:hover { opacity:1; color:var(--red); }
+.weight-chart { padding:0.4rem 0.6rem 0.7rem; }
 </style>
 </head>
 <body>
@@ -6276,6 +6471,26 @@ body::after {
     <line x1="0" y1="0" x2="60" y2="120"/>
     <path d="M 0 0 Q 40 20 60 60 Q 80 100 120 120"/>
     <path d="M 0 0 Q 25 12 45 45 Q 65 80 100 105"/>
+  </g>
+</svg>
+<!-- extra reactive web corners — opacity controlled by updateWebBg() -->
+<svg id="web-extra-tr" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#ffd700" stroke-width="0.4" fill="none">
+    <line x1="0" y1="0" x2="150" y2="150"/>
+    <line x1="0" y1="0" x2="150" y2="75"/>
+    <line x1="0" y1="0" x2="75" y2="150"/>
+    <line x1="0" y1="0" x2="150" y2="40"/>
+    <path d="M 0 0 Q 50 25 75 75 Q 100 125 150 150"/>
+    <path d="M 0 0 Q 30 15 55 55 Q 80 95 120 130"/>
+  </g>
+</svg>
+<svg id="web-extra-bl" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#b478e8" stroke-width="0.4" fill="none">
+    <line x1="0" y1="0" x2="150" y2="150"/>
+    <line x1="0" y1="0" x2="150" y2="75"/>
+    <line x1="0" y1="0" x2="75" y2="150"/>
+    <path d="M 0 0 Q 50 25 75 75 Q 100 125 150 150"/>
+    <path d="M 0 0 Q 30 15 55 55 Q 80 95 120 130"/>
   </g>
 </svg>
 
@@ -6646,7 +6861,11 @@ let state = {
   ui: { tab: 'workouts', scheduleView: 'list', calMonth: null },
   bossProgress: {},
   activeBossId: 'shocker',
-  bossRound: 1
+  bossRound: 1,
+  onboarded: false,
+  weightLog: [],
+  weightUnit: 'kg',
+  lastRecapWeek: null
 };
 
 // Focus mode state (not persisted)
@@ -6822,15 +7041,590 @@ function getCurrentBanner() {
 
 // ===== HAPTIC FEEDBACK =====
 const HAPTIC_PATTERNS = {
-  tap: 8, click: 12, select: [15, 5, 20], equip: [25, 10, 35], success: [15, 5, 25],
-  statGain: 18, complete: [30, 20, 50, 20, 80], levelUp: [60, 30, 80, 30, 120, 30, 200],
-  achievement: [40, 20, 60, 20, 100], rest: 15, open: 12, close: 8,
-  tabSwitch: 8, error: [40, 50, 40], toggle: [10, 5, 10]
+  tap: 30, click: 40, select: [30, 15, 50], equip: [50, 20, 80], success: [35, 15, 55],
+  statGain: 35, complete: [60, 30, 90, 30, 130], levelUp: [80, 40, 110, 40, 160, 40, 260],
+  achievement: [130, 40, 130, 40, 230], milestone: [70, 30, 70, 30, 140],
+  tabSwitch: 20, error: [60, 60, 60], toggle: [25, 12, 35], rest: 25, open: 20, close: 18
 };
 function haptic(name) {
   if (!state.settings?.haptics) return;
-  if (!navigator.vibrate) return;
-  try { navigator.vibrate(HAPTIC_PATTERNS[name] || 10); } catch(e) {}
+  // Android / physical vibration
+  if (navigator.vibrate) {
+    try { navigator.vibrate(HAPTIC_PATTERNS[name] || 30); } catch(e) {}
+  }
+  // iOS & desktop fallback: brief visual press-in on whichever button triggered this
+  const btn = document.activeElement;
+  if (btn && btn.tagName === 'BUTTON' && !btn.classList.contains('nav-btn')) {
+    btn.style.transform = 'scale(0.93)';
+    btn.style.opacity   = '0.75';
+    btn.style.transition = 'transform 55ms ease-out, opacity 55ms ease-out';
+    setTimeout(() => {
+      btn.style.transform = '';
+      btn.style.opacity   = '';
+      setTimeout(() => { btn.style.transition = ''; }, 80);
+    }, 55);
+  }
+}
+
+// ===== SPIDER-RANK SYSTEM (E → D → C → B → A → S → National) =====
+const SPIDER_RANKS = [
+  { id:'e', label:'E-Rank',   minXP:0,    color:'#888888' },
+  { id:'d', label:'D-Rank',   minXP:50,   color:'#4caf50' },
+  { id:'c', label:'C-Rank',   minXP:150,  color:'#2196f3' },
+  { id:'b', label:'B-Rank',   minXP:400,  color:'#b478e8' },
+  { id:'a', label:'A-Rank',   minXP:900,  color:'#ffd700' },
+  { id:'s', label:'S-Rank',   minXP:2000, color:'#e62429' },
+  { id:'n', label:'National', minXP:5000, color:'#ffd700' }
+];
+function getSpiderRank(xp) {
+  let rank = SPIDER_RANKS[0], idx = 0;
+  for (let i = 0; i < SPIDER_RANKS.length; i++) {
+    if (xp >= SPIDER_RANKS[i].minXP) { rank = SPIDER_RANKS[i]; idx = i; }
+  }
+  const next = SPIDER_RANKS[idx + 1] || null;
+  return { rank, next, idx };
+}
+function spiderRankBadgeHTML(xp, small = false) {
+  const { rank, next } = getSpiderRank(xp);
+  const toNext = next ? (next.minXP - xp) + ' XP to ' + next.label : 'MAX RANK';
+  return `<span class="spider-rank-badge rank-${rank.id}" title="${toNext}">${rank.label}</span>`;
+}
+function prestigeBadgeHTML() {
+  const round = state.bossRound || 1;
+  if (round <= 1) return '';
+  const ng = round - 1;
+  const tiers = ['bronze','silver','gold','obsidian'];
+  const tier = tiers[Math.min(ng - 1, tiers.length - 1)];
+  return `<span class="prestige-badge prestige-${tier}">⚡ NG+${ng}</span>`;
+}
+
+// ===== GADGET LOADOUT SYSTEM =====
+const GADGETS = [
+  {
+    id: 'electric-web',
+    name: 'Electric Web Mk. II',
+    icon: '⚡',
+    boss: 'shocker',
+    color: '#ffcc00',
+    lore: "Upgraded with Shocker's vibro-tech after the Fisk Warehouse takedown. Delivers a resonating charge on contact.",
+    passive: 'Tasks completed before noon give +1 bonus CLARITY',
+    triggerHint: 'Complete a task in the morning'
+  },
+  {
+    id: 'spider-tracer',
+    name: 'Spider-Tracer Mk. IV',
+    icon: '🎯',
+    boss: 'vulture',
+    color: '#7aab3a',
+    lore: "Reverse-engineered from Vulture's aerial tracking systems. Originally built to track Doc Ock after his release.",
+    passive: '7-day habit streak milestones award +2 DISCIPLINE instead of +1',
+    triggerHint: 'Hit a 7-day streak milestone on any habit'
+  },
+  {
+    id: 'impact-web',
+    name: 'Impact Web Cartridge',
+    icon: '🛡',
+    boss: 'rhino',
+    color: '#8899aa',
+    lore: "Designed to stop Rhino's charge dead. Condenses web fluid into a force-absorbing slug that hits like a freight train.",
+    passive: 'Completing 4+ habits in one day triggers a +2 FOCUS burst',
+    triggerHint: 'Complete 4 or more habits in a single day'
+  },
+  {
+    id: 'suspension-matrix',
+    name: 'Suspension Matrix',
+    icon: '🔬',
+    boss: 'doc-ock',
+    color: '#ff6644',
+    lore: "Reverse-engineered from Otto Octavius's lab tech after the final confrontation. Uses anti-gravity fields to hold targets indefinitely.",
+    passive: 'Focus sessions ≥ 20 min give +2 FOCUS instead of +1',
+    triggerHint: 'Complete a focus session of 20+ minutes'
+  },
+  {
+    id: 'symbiote-dampener',
+    name: 'Symbiote Dampener',
+    icon: '🖤',
+    boss: 'venom',
+    color: '#aaaaaa',
+    lore: "Anti-symbiote resonance tech Peter built after separating from the black suit. Disrupts alien bio-frequencies.",
+    passive: 'Returning to a habit after a 2+ day gap gives +2 RESILIENCE instead of +1',
+    triggerHint: 'Complete a habit you missed for 2+ days'
+  },
+  {
+    id: 'pumpkin-override',
+    name: 'Pumpkin Bomb Override',
+    icon: '💥',
+    boss: 'green-goblin',
+    color: '#aa44ff',
+    lore: "Goblin-tech EMP repurposed from Norman Osborn's lab. Overrides enemy systems — and apparently your own productivity too.",
+    passive: 'Completing ALL habits in one day gives +2 bonus to CLARITY, FOCUS, DISCIPLINE & RESILIENCE',
+    triggerHint: 'Complete every single habit in one day'
+  }
+];
+
+function isGadgetEquipped(id) { return (state.gadgets?.equipped || []).includes(id); }
+function isGadgetOwned(id)    { return (state.gadgets?.owned   || []).includes(id); }
+
+function awardGadget(bossId) {
+  const gadget = GADGETS.find(g => g.boss === bossId);
+  if (!gadget) return;
+  state.gadgets = state.gadgets || { owned: [], equipped: [] };
+  if (!state.gadgets.owned.includes(gadget.id)) {
+    state.gadgets.owned.push(gadget.id);
+    // Don't save here — defeatBoss saves right after
+    return gadget; // return so caller can show it
+  }
+  return null;
+}
+
+function toggleEquipGadget(id) {
+  state.gadgets = state.gadgets || { owned: [], equipped: [] };
+  const eq = state.gadgets.equipped;
+  const idx = eq.indexOf(id);
+  if (idx >= 0) {
+    eq.splice(idx, 1);
+  } else {
+    if (eq.length >= 2) { showToast('Max 2 gadgets equipped — unequip one first'); playSound('error'); return; }
+    eq.push(id);
+  }
+  saveState();
+  playSound('select');
+  renderLoadout();
+  // Refresh home chip row if visible
+  const chipRow = document.querySelector('.equipped-gadgets-row');
+  if (chipRow) chipRow.outerHTML = equippedGadgetsRowHTML();
+}
+
+function equippedGadgetsRowHTML() {
+  const eq = state.gadgets?.equipped || [];
+  if (eq.length === 0) return '<div class="equipped-gadgets-row" style="opacity:0.4;font-size:0.62rem;color:var(--text-dim);padding-bottom:0.5rem">No gadgets equipped · defeat bosses to unlock</div>';
+  const chips = eq.map(id => {
+    const g = GADGETS.find(x => x.id === id);
+    if (!g) return '';
+    return `<span class="equipped-chip" style="--chip-color:${g.color}" onclick="openLoadout()">${g.icon} ${g.name}</span>`;
+  }).join('');
+  return `<div class="equipped-gadgets-row">${chips}</div>`;
+}
+
+function openLoadout() {
+  modalContext = { kind: 'loadout' };
+  document.getElementById('modal-title').textContent = '🛠 GADGET LOADOUT';
+  renderLoadout();
+  document.getElementById('modal-footer').style.display = 'none';
+  openModal();
+}
+
+function renderLoadout() {
+  const owned    = state.gadgets?.owned    || [];
+  const equipped = state.gadgets?.equipped || [];
+  const cards = GADGETS.map(g => {
+    const isOwned    = owned.includes(g.id);
+    const isEquipped = equipped.includes(g.id);
+    const boss       = getBossById(g.boss);
+    return `
+      <div class="gadget-card ${isOwned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''}"
+           style="--gadget-color:${g.color}"
+           ${isOwned ? `onclick="toggleEquipGadget('${g.id}')"` : ''}>
+        <div class="gadget-icon">${g.icon}</div>
+        <div class="gadget-info">
+          <div class="gadget-name">${g.name}</div>
+          <div class="gadget-passive" style="color:${isOwned ? g.color + 'cc' : ''}">
+            ${isOwned ? '⚡ ' + g.passive : '🔒 Defeat ' + (boss?.name || '?') + ' to unlock'}
+          </div>
+          ${isOwned ? `<div class="gadget-passive" style="margin-top:0.2rem;font-style:italic">${g.lore}</div>` : ''}
+        </div>
+        ${isEquipped
+          ? `<div class="gadget-badge equipped-tag" style="background:${g.color}">ON</div>`
+          : isOwned
+            ? `<div class="gadget-badge tap-tag">TAP</div>`
+            : ''}
+      </div>`;
+  }).join('');
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="gadget-loadout-header">
+      <div class="gadget-slots-info">LOADOUT — ${equipped.length}/2 SLOTS ACTIVE</div>
+      <div class="gadget-slots-bar">
+        <div class="gadget-slot ${equipped.length >= 1 ? 'filled' : ''}"></div>
+        <div class="gadget-slot ${equipped.length >= 2 ? 'filled' : ''}"></div>
+      </div>
+    </div>
+    <div class="gadget-list">${cards}</div>
+    <div style="padding:0.7rem 0.9rem;font-size:0.63rem;color:var(--text-dim);line-height:1.5">
+      Defeat bosses on the Quests tab to unlock gadgets. Equip up to 2 at a time — their passives are always active while equipped.
+    </div>`;
+}
+
+// ===== META RANK NAMES (Phantom Thief style per stat group) =====
+const META_RANK_NAMES = {
+  physical:  [{min:0,n:'Untrained'},{min:10,n:'Brawler'},{min:30,n:'Enforcer'},{min:70,n:'Web-Warrior'},{min:140,n:'Spider-Man'}],
+  mental:    [{min:0,n:'Unfocused'},{min:8,n:'Aware'},{min:25,n:'Agent'},{min:60,n:'Mastermind'},{min:120,n:'Phantom'}],
+  lifestyle: [{min:0,n:'Sedentary'},{min:5,n:'Aware'},{min:18,n:'Balanced'},{min:40,n:'Resilient'},{min:80,n:'Elite'}],
+  mastery:   [{min:0,n:'Novice'},{min:5,n:'Apprentice'},{min:18,n:'Skilled'},{min:40,n:'Expert'},{min:80,n:'Legend'}]
+};
+function metaRankName(groupId, subtotal) {
+  const tiers = META_RANK_NAMES[groupId] || [];
+  let name = tiers[0]?.n || '';
+  for (const t of tiers) { if (subtotal >= t.min) name = t.n; }
+  return name;
+}
+
+// ===== HOME ALERTS =====
+function homeAlertsHTML() {
+  const today = todayDate();
+  const tasks = state.tasks || [];
+  const habits = state.habits || [];
+  const alerts = [];
+
+  const overdueCount = tasks.filter(isTaskOverdue).length;
+  if (overdueCount > 0) {
+    alerts.push(`<div class="home-alert home-alert-red" onclick="switchTab('schedule')">⚠ ${overdueCount} overdue task${overdueCount > 1 ? 's' : ''}<span class="home-alert-cta">View →</span></div>`);
+  }
+
+  const habitsDone = habits.filter(h => (h.history||[]).includes(today)).length;
+  const habitsLeft = habits.length - habitsDone;
+  if (habits.length > 0 && habitsLeft > 0) {
+    alerts.push(`<div class="home-alert home-alert-amber" onclick="switchTab('habits')">🏃 ${habitsLeft} daily habit${habitsLeft > 1 ? 's' : ''} left today<span class="home-alert-cta">Go →</span></div>`);
+  }
+
+  const todayName = WEEKDAY_FULL[new Date().getDay()];
+  const todayDayIdx = (state.week || []).findIndex(d => d.day === todayName);
+  if (todayDayIdx >= 0 && !state.week[todayDayIdx].rest && !hasLoggedToday(todayDayIdx)) {
+    alerts.push(`<div class="home-alert home-alert-blue" onclick="switchTab('workouts')">🏋 Today's workout not logged yet<span class="home-alert-cta">Start →</span></div>`);
+  }
+
+  if (habits.length > 0 && habitsLeft === 0 && overdueCount === 0) {
+    alerts.push(`<div class="home-alert home-alert-green">✓ All caught up — great work today!</div>`);
+  }
+
+  return alerts.length ? `<div class="home-alerts">${alerts.join('')}</div>` : '';
+}
+
+// ===== ONBOARDING =====
+let _obStep = 0;
+const _OB_HABITS = ['🧘 Meditate','💧 Drink water','📖 Read 10 min','🛌 Sleep by 11pm','🚶 Walk outside','🙏 Gratitude'];
+
+function checkOnboarding() {
+  if (state.onboarded) return;
+  setTimeout(openOnboarding, 600);
+}
+
+function openOnboarding() {
+  _obStep = 0;
+  modalContext = { kind: 'onboarding' };
+  document.getElementById('modal-title').textContent = '🕸 WELCOME';
+  document.getElementById('modal-footer').style.display = 'none';
+  _renderObStep();
+  openModal();
+}
+
+function _renderObStep() {
+  const steps = [
+    { title: "Welcome, Spider.", sub: "Your personal training HQ — workouts, habits, tasks, mental stats, all in one place. Let's get you set up in 2 steps.", next: "Next →" },
+    { title: "First daily habit.", sub: "Daily habits earn FOCUS, DISCIPLINE & RESILIENCE. Pick one to start — you can add more anytime.", next: "Almost done →" },
+    { title: "You're ready.", sub: "Defeat bosses in Quests to unlock gadget passives. Watch your Spider-Rank climb in Analytics. Let's go.", next: "Let's go! 🔥" }
+  ];
+  const s = steps[_obStep];
+  const dots = steps.map((_,i) => `<div class="ob-dot ${i===_obStep?'active':''}"></div>`).join('');
+  let body = '';
+  if (_obStep === 0) {
+    body = `<input class="ob-field" id="ob-name" placeholder="What should we call you?" maxlength="24" value="${escapeHtml(state.settings.userName||'')}">`;
+  } else if (_obStep === 1) {
+    body = `
+      <div class="ob-habit-grid">
+        ${_OB_HABITS.map((h,i) => `<div class="ob-habit-opt" onclick="this.parentElement.querySelectorAll('.ob-habit-opt').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')">${h}</div>`).join('')}
+      </div>
+      <input class="ob-field" id="ob-custom" placeholder="Or type your own…" maxlength="40">
+    `;
+  } else {
+    body = `<div style="text-align:center;padding:0.8rem 0 0.4rem;font-size:2.8rem">🕸</div>`;
+  }
+  document.getElementById('modal-body').innerHTML = `
+    <div class="ob-dots">${dots}</div>
+    <div class="ob-title">${s.title}</div>
+    <div class="ob-sub">${s.sub}</div>
+    ${body}
+    <button class="primary-btn" style="width:100%;margin-top:0.85rem" onclick="_obAdvance()">${s.next}</button>
+    ${_obStep === 0 ? `<button style="width:100%;margin-top:0.3rem;background:none;border:none;color:var(--text-dim);font-size:0.68rem;cursor:pointer;padding:0.3rem" onclick="_obSkip()">Skip setup</button>` : ''}
+  `;
+  document.getElementById('modal-body').querySelector('#ob-name, #ob-custom')?.focus?.();
+}
+
+function _obAdvance() {
+  if (_obStep === 0) {
+    const name = document.getElementById('ob-name')?.value.trim();
+    if (name) { state.settings.userName = name; saveState(); }
+  } else if (_obStep === 1) {
+    const sel = document.querySelector('.ob-habit-opt.selected');
+    const custom = document.getElementById('ob-custom')?.value.trim();
+    const raw = custom || sel?.textContent || '';
+    if (raw) {
+      const iconMatch = raw.match(/^([\u{1F300}-\u{1FFFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F100}-\u{1F1FF}])/u);
+      const icon = iconMatch ? iconMatch[1] : '🎯';
+      const name = raw.replace(/^[^\w\s]+\s*/u,'').trim() || raw;
+      if (!( state.habits||[]).find(h => h.name === name)) {
+        state.habits = state.habits || [];
+        state.habits.push({ id:'ob_'+Date.now().toString(36), name, icon, color:'#ff9a3c', history:[], createdAt:todayDate() });
+        saveState();
+      }
+    }
+  } else {
+    state.onboarded = true; saveState(); closeModal(); renderAll(); return;
+  }
+  _obStep++;
+  _renderObStep();
+}
+
+function _obSkip() { state.onboarded = true; saveState(); closeModal(); }
+
+// ===== COMBINED ACTIVITY HEATMAP (Habits tab) =====
+function activityHeatmapHTML() {
+  const habits = state.habits || [];
+  if (habits.length === 0) return '';
+  const today = todayDate();
+  const days = 91; // 13 weeks
+  const cells = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = daysAgoDate(i);
+    const done = habits.filter(h => (h.history||[]).includes(d)).length;
+    const total = habits.length;
+    const pct = total > 0 ? done / total : 0;
+    let lvl = '';
+    if (pct > 0 && pct <= 0.33) lvl = 'l1';
+    else if (pct > 0.33 && pct <= 0.66) lvl = 'l2';
+    else if (pct > 0.66 && pct < 1) lvl = 'l3';
+    else if (pct === 1) lvl = 'full';
+    cells.push({ date: d, lvl, isToday: d === today });
+  }
+  const firstDow = new Date(cells[0].date).getDay();
+  const padded = Array.from({length: firstDow}, () => ({pad:true})).concat(cells);
+  const totalDays = cells.filter(c => c.lvl).length;
+  const perfectDays = cells.filter(c => c.lvl === 'full').length;
+  return `
+    <div class="activity-heatmap-card">
+      <div class="activity-heatmap-head">
+        <span class="activity-heatmap-title">📅 Activity</span>
+        <span class="activity-heatmap-sub">${perfectDays} perfect days · ${totalDays} active days (13 wks)</span>
+      </div>
+      <div class="activity-heatmap-grid">
+        ${padded.map(c => c.pad ? '<div></div>' : `<div class="act-cell ${c.lvl} ${c.isToday?'today-ring':''}" title="${c.date}"></div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ===== WEEKLY RECAP =====
+function _weekMonday(daysAgo) {
+  const d = new Date(Date.now() - daysAgo * 86400000);
+  const offset = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - offset);
+  return d.toISOString().slice(0, 10);
+}
+
+function checkWeeklyRecap() {
+  if (new Date().getDay() !== 1) return; // Monday only
+  const lastMonday = _weekMonday(7);
+  if (state.lastRecapWeek === lastMonday) return;
+  state.lastRecapWeek = lastMonday;
+  saveState();
+  setTimeout(() => openWeeklyRecap(lastMonday), 1400);
+}
+
+function openWeeklyRecap(weekStart) {
+  const weekEnd = new Date(new Date(weekStart).getTime() + 6*86400000).toISOString().slice(0,10);
+  const tasks = state.tasks || [];
+  const habits = state.habits || [];
+  const log = state.log || [];
+
+  const tasksDone = tasks.filter(t => t.completed && t.completedAt && t.completedAt.slice(0,10) >= weekStart && t.completedAt.slice(0,10) <= weekEnd).length;
+  const workoutDays = log.filter(e => e.date >= weekStart && e.date <= weekEnd).length;
+  const weekDays = Array.from({length:7},(_,i) => new Date(new Date(weekStart).getTime()+i*86400000).toISOString().slice(0,10));
+  const totalSlots = habits.length * 7;
+  const habitsHit = habits.reduce((s,h) => s + weekDays.filter(d => (h.history||[]).includes(d)).length, 0);
+  const habitPct = totalSlots > 0 ? Math.round(habitsHit/totalSlots*100) : 0;
+  const xp = computeTotalXP();
+  const sl = spiderLevelFor(xp);
+  const { rank } = getSpiderRank(xp);
+
+  const bestH = habits.length ? habits.reduce((b,h) => habitStreak(h) > habitStreak(b) ? h : b) : null;
+
+  const highlights = [];
+  if (workoutDays >= 4) highlights.push(`<div class="recap-hl" style="border-color:#ff9a3c;background:rgba(255,154,60,0.07)">💪 Crushed it — ${workoutDays} workouts this week!</div>`);
+  if (habitPct >= 80) highlights.push(`<div class="recap-hl" style="border-color:#2cd6a4;background:rgba(44,214,164,0.07)">⚡ ${habitPct}% habit completion — excellent consistency!</div>`);
+  if (bestH) highlights.push(`<div class="recap-hl">🔥 Best streak: <strong>${bestH.icon} ${escapeHtml(bestH.name)}</strong> — ${habitStreak(bestH)} days running</div>`);
+
+  modalContext = { kind: 'weeklyRecap' };
+  document.getElementById('modal-title').textContent = '📊 WEEKLY RECAP';
+  document.getElementById('modal-body').innerHTML = `
+    <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:0.8rem">Week of ${fmtDate(weekStart)} — here's how you did:</div>
+    <div class="recap-grid">
+      <div class="recap-stat"><div class="recap-stat-val">${tasksDone}</div><div class="recap-stat-lbl">Tasks Done</div></div>
+      <div class="recap-stat"><div class="recap-stat-val">${workoutDays}</div><div class="recap-stat-lbl">Workouts</div></div>
+      <div class="recap-stat"><div class="recap-stat-val">${habitPct}%</div><div class="recap-stat-lbl">Habit Rate</div></div>
+      <div class="recap-stat"><div class="recap-stat-val" style="color:${rank.color}">${rank.label.replace('-Rank','')}</div><div class="recap-stat-lbl">Spider Rank</div></div>
+    </div>
+    ${highlights.join('')}
+    <div style="font-size:0.7rem;color:var(--text-dim);text-align:center;margin-top:0.3rem">LV ${sl.current.lv} ${sl.current.title} · ${xp} XP total</div>
+  `;
+  document.getElementById('modal-footer').style.display = 'flex';
+  document.getElementById('modal-confirm-btn').textContent = 'Start the Week 🔥';
+  document.getElementById('modal-confirm-btn').onclick = closeModal;
+  document.getElementById('modal-cancel-btn').style.display = 'none';
+  openModal();
+}
+
+// ===== WEIGHT LOG =====
+let _weightUnit = 'kg';
+function weightLogHTML() {
+  const entries = (state.weightLog || []).slice().sort((a,b) => a.date.localeCompare(b.date));
+  const recent = entries.slice(-5).reverse();
+  const last = entries[entries.length-1];
+  _weightUnit = state.weightUnit || 'kg';
+
+  const chartSVG = (() => {
+    if (entries.length < 2) return `<div style="text-align:center;padding:0.8rem;font-size:0.7rem;color:var(--text-dim)">Log 2+ entries to see your trend</div>`;
+    const show = entries.slice(-20);
+    const vals = show.map(e => e.weight);
+    const mn = Math.min(...vals), mx = Math.max(...vals);
+    const range = mx - mn || 1;
+    const W=300, H=70, pl=28, pr=8, pt=6, pb=6;
+    const pw=W-pl-pr, ph=H-pt-pb;
+    const pts = show.map((e,i)=>`${pl+(i/(show.length-1))*pw},${pt+(1-(e.weight-mn)/range)*ph}`).join(' ');
+    const diff = vals[vals.length-1]-vals[0];
+    const col = diff < -0.1 ? '#2cd6a4' : diff > 0.1 ? '#e62429' : '#888';
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+      ${[0,0.5,1].map(t=>{const y=pt+t*ph,v=(mx-t*range).toFixed(1);return`<line x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/><text x="${pl-3}" y="${y+3}" text-anchor="end" fill="rgba(255,255,255,0.3)" font-size="6" font-family="Rajdhani">${v}</text>`;}).join('')}
+      <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" style="filter:drop-shadow(0 0 3px ${col})"/>
+      ${show.map((e,i)=>{const x=pl+(i/(show.length-1))*pw,y=pt+(1-(e.weight-mn)/range)*ph;return`<circle cx="${x}" cy="${y}" r="2" fill="${col}"/>`;}).join('')}
+    </svg>`;
+  })();
+
+  return `
+    <div class="weight-card">
+      <div class="weight-card-head">
+        <span class="weight-card-title">⚖ Body Weight</span>
+        ${last ? `<span style="font-size:0.72rem;font-weight:900;color:var(--text-dim)">${last.weight} ${_weightUnit}</span>` : ''}
+      </div>
+      <div class="weight-entry-row">
+        <input class="weight-num-input" id="weight-input" type="number" min="20" max="500" step="0.1" placeholder="—">
+        <button class="weight-unit-pill ${_weightUnit==='kg'?'on':''}" onclick="setWeightUnit('kg')">kg</button>
+        <button class="weight-unit-pill ${_weightUnit==='lbs'?'on':''}" onclick="setWeightUnit('lbs')">lbs</button>
+        <button class="primary-btn" style="padding:0.42rem 0.8rem;font-size:0.7rem;margin-left:auto" onclick="logWeight()">Log</button>
+      </div>
+      <div class="weight-chart">${chartSVG}</div>
+      ${recent.length > 0 ? `<div class="weight-log-list">${recent.map(e=>`
+        <div class="weight-log-entry">
+          <span class="weight-log-date">${fmtDate(e.date)}</span>
+          <span class="weight-log-val">${e.weight} <span style="font-size:0.6rem;opacity:0.6">${e.unit||_weightUnit}</span></span>
+          <span class="weight-log-del" onclick="deleteWeightEntry('${e.date}')">✕</span>
+        </div>`).join('')}</div>` : ''}
+    </div>
+  `;
+}
+
+function setWeightUnit(u) {
+  _weightUnit = u;
+  state.weightUnit = u;
+  saveState();
+  if (state.ui.tab === 'analytics') renderAnalytics();
+}
+
+function logWeight() {
+  const val = parseFloat(document.getElementById('weight-input')?.value);
+  if (!val || val < 20 || val > 500) { showToast('Enter a valid weight (20–500)'); return; }
+  state.weightLog = state.weightLog || [];
+  const today = todayDate();
+  const existing = state.weightLog.findIndex(e => e.date === today);
+  if (existing >= 0) state.weightLog[existing] = { date: today, weight: val, unit: _weightUnit };
+  else state.weightLog.push({ date: today, weight: val, unit: _weightUnit });
+  saveState();
+  haptic('success');
+  showToast('⚖ Weight logged!');
+  if (state.ui.tab === 'analytics') renderAnalytics();
+}
+
+function deleteWeightEntry(date) {
+  state.weightLog = (state.weightLog || []).filter(e => e.date !== date);
+  saveState();
+  if (state.ui.tab === 'analytics') renderAnalytics();
+}
+
+// ===== REACTIVE WEB BACKGROUND =====
+function updateWebBg() {
+  const today = todayDate();
+  const habits = state.habits || [];
+  const tasks  = state.tasks  || [];
+  const hDone = habits.filter(h => (h.history||[]).includes(today)).length;
+  const tDue  = tasks.filter(isTaskDueToday).length;
+  const tDone = tasks.filter(t => {
+    if (t.recurring) return !!(t.completionsByDate?.[today]);
+    return t.completed && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === today;
+  }).length;
+  const total = habits.length + tDue;
+  const score = total > 0 ? Math.min(1, (hDone + tDone) / total) : 0;
+  // Base corners: 0.12 → 0.55 opacity based on score
+  const baseOp = 0.12 + score * 0.43;
+  document.querySelectorAll('.web-corner').forEach(el => { el.style.opacity = baseOp; });
+  // Extra corners appear only when score > 0.4
+  const extraOp = Math.max(0, (score - 0.4) / 0.6) * 0.3;
+  ['web-extra-tr','web-extra-bl'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.opacity = extraOp;
+  });
+}
+
+// ===== RADAR / SPIDER CHART =====
+function radarChartSVG() {
+  const pts = computeStatPoints();
+  const SIZE = 140, CX = SIZE/2, CY = SIZE/2, R = 52;
+  // Order: PHYSICAL(top), MENTAL(right), LIFESTYLE(bottom), MASTERY(left)
+  const axisAngles = [-90, 0, 90, 180]; // degrees from east
+  const groups = META_GROUPS.map((g, i) => ({
+    ...g,
+    color: STAT_COLORS[g.stats[0]] || '#fff',
+    val: g.stats.reduce((s, x) => s + (pts[x]||0), 0),
+    angle: axisAngles[i]
+  }));
+  const maxVal = Math.max(20, ...groups.map(g => g.val));
+  const toXY = (angleDeg, r) => {
+    const rad = angleDeg * Math.PI / 180;
+    return [CX + r * Math.cos(rad), CY + r * Math.sin(rad)];
+  };
+  // Grid rings
+  const gridRings = [0.33,0.66,1].map(f => {
+    const pts2 = axisAngles.map(a => toXY(a, R*f).join(',')).join(' ');
+    return `<polygon points="${pts2}" class="radar-grid"/>`;
+  }).join('');
+  // Axes
+  const axes = axisAngles.map(a => {
+    const [x2,y2] = toXY(a, R);
+    return `<line x1="${CX}" y1="${CY}" x2="${x2}" y2="${y2}" class="radar-axis"/>`;
+  }).join('');
+  // Data polygon
+  const dataPts = groups.map(g => {
+    const frac = Math.min(1, g.val / maxVal);
+    return toXY(g.angle, R * frac).join(',');
+  }).join(' ');
+  // Labels + values
+  const labelR = R + 20;
+  const labelEls = groups.map(g => {
+    const [lx, ly] = toXY(g.angle, labelR);
+    const rankName = metaRankName(g.id, g.val);
+    return `
+      <text x="${lx}" y="${ly - 3}" class="radar-label" style="fill:${g.color}">${g.name}</text>
+      <text x="${lx}" y="${ly + 10}" class="radar-val">${g.val}</text>
+      <text x="${lx}" y="${ly + 20}" style="font-size:7px;fill:${g.color}80;text-anchor:middle;font-family:'Rajdhani',sans-serif;font-weight:800;letter-spacing:1px">${rankName}</text>
+    `;
+  }).join('');
+  return `
+    <div class="radar-wrap">
+      <div class="radar-title">⬡ Power Distribution</div>
+      <svg class="radar-svg" width="${SIZE+80}" height="${SIZE+80}" viewBox="-40 -40 ${SIZE+80} ${SIZE+80}">
+        ${gridRings}${axes}
+        <polygon points="${dataPts}" class="radar-poly"/>
+        ${labelEls}
+      </svg>
+    </div>`;
 }
 
 function spiderLevelFor(xp) {
@@ -6918,6 +7712,17 @@ function loadState() {
       if (!parsed.intentionHistory) parsed.intentionHistory = [];
       if (!parsed.focusSessions) parsed.focusSessions = [];
       if (parsed.workoutSession === undefined) parsed.workoutSession = null;
+      // MIGRATION: gadget loadout system
+      if (!parsed.gadgets) parsed.gadgets = { owned: [], equipped: [] };
+      if (!parsed.gadgets.owned)    parsed.gadgets.owned    = [];
+      if (!parsed.gadgets.equipped) parsed.gadgets.equipped = [];
+      // Retroactively award gadgets for bosses already defeated
+      GADGETS.forEach(g => {
+        if (parsed.gadgets.owned.includes(g.id)) return;
+        const defeatedThisRound = parsed.bossProgress?.[g.boss]?.defeated;
+        const defeatedPrevRound = (parsed.bossRound || 1) > 1; // all bosses cleared at least once
+        if (defeatedThisRound || defeatedPrevRound) parsed.gadgets.owned.push(g.id);
+      });
       // MIGRATION: dedupe workout log to fix the old "click 7 times" exploit
       if (parsed.log && Array.isArray(parsed.log)) {
         const seenKeys = new Set();
@@ -6984,6 +7789,14 @@ function loadState() {
         parsed.activeBossId = 'shocker';
       }
       if (!parsed.bossRound) parsed.bossRound = 1;
+      // Existing users (have habits/log/tasks) skip onboarding automatically
+      if (parsed.onboarded === undefined) {
+        const hasData = (parsed.habits?.length > 0) || (parsed.log?.length > 0) || (parsed.tasks?.length > 0);
+        parsed.onboarded = hasData;
+      }
+      if (!parsed.weightLog) parsed.weightLog = [];
+      if (!parsed.weightUnit) parsed.weightUnit = 'kg';
+      if (!parsed.lastRecapWeek) parsed.lastRecapWeek = null;
       state = parsed;
     }
   } catch(e) { console.warn('Could not load state', e); }
@@ -7330,7 +8143,10 @@ function renderProfileBody() {
             <div class="profile-name">${escapeHtml(state.settings.userName || 'Player')}</div>
             <div class="profile-title">${escapeHtml(title)}</div>
           </div>
-          <div class="profile-lv">LV ${sl.current.lv}</div>
+          <div style="text-align:right">
+            <div class="profile-lv">LV ${sl.current.lv}</div>
+            <div style="margin-top:0.3rem">${spiderRankBadgeHTML(xp, true)}${prestigeBadgeHTML()}</div>
+          </div>
         </div>
         <div class="profile-stats-row">
           <div class="profile-stat"><div class="v">${xp}</div><div class="l">XP</div></div>
@@ -7345,11 +8161,13 @@ function renderProfileBody() {
             </div>
           `).join('')}
         </div>
+        ${radarChartSVG()}
         <div class="profile-since">Member since ${joined} · ${earned.size} titles earned</div>
         <div class="profile-actions">
           <button class="profile-action-btn" onclick="openPFPPicker()">🕷 Picture</button>
           <button class="profile-action-btn" onclick="openTitlePicker()">🏷 Title</button>
           <button class="profile-action-btn" onclick="openBannerPicker()">🎨 Banner</button>
+          <button class="profile-action-btn" onclick="openLoadout()" style="border-color:var(--red);color:var(--red)">🛠 Loadout</button>
         </div>
       </div>
     </div>
@@ -8017,12 +8835,14 @@ function render() {
             </div>`;
           return;
         }
+        const _pb = getPB(slot.poolId, slot.exerciseId);
         html += `
           <div class="exercise ${ex.level}" style="--ex-glow:${CAT_COLORS[ex.category]}" onclick="openSwap(${dayIdx}, ${slotIdx})">
             <div class="exercise-info">
               <div class="exercise-name-row">
                 <span class="exercise-cat cat-${ex.category}">${ex.category}</span>
                 <span class="exercise-name">${escapeHtml(ex.name)}</span>
+                ${_pb ? `<span class="ex-pb">🏅 PR: ${_pb.total}</span>` : ''}
               </div>
               <div class="exercise-meta">${escapeHtml(ex.meta)}</div>
             </div>
@@ -8528,6 +9348,9 @@ function switchTab(tabName) {
   saveState();
   if (isChange) playSound('tabSwitch');
 
+  // Reset scroll BEFORE rendering new content so the jump is never visible
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
   document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
   document.getElementById('tab-' + tabName)?.classList.add('active');
 
@@ -8543,7 +9366,6 @@ function switchTab(tabName) {
   if (tabName === 'habits')    { applyQuestViewBg(); renderHabits(); }
   if (tabName === 'analytics') renderAnalytics();
   updateNavBadges();
-  window.scrollTo(0, 0);
 }
 
 function renderAll() {
@@ -8553,6 +9375,9 @@ function renderAll() {
   renderHabits();
   renderAnalytics();
   updateNavBadges();
+  setTimeout(updateWebBg, 100);
+  setTimeout(checkOnboarding, 800);
+  setTimeout(checkWeeklyRecap, 1200);
 }
 
 function updateNavBadges() {
@@ -8586,7 +9411,6 @@ function updateNavBadges() {
 
   setBadge('schedule', scheduleCount, overdueCount > 0 ? 'overdue' : '');
   setBadge('habits', questsTotalBadge, goalsOverdue > 0 ? 'overdue' : 'quest');
-  setBadge('workouts', workoutPending, '');
   setBadge('home', overdueCount, overdueCount > 0 ? 'overdue' : '');
   setBadge('analytics', 0);
 }
@@ -9249,7 +10073,13 @@ function toggleTaskDone(id) {
   renderHome();
   if (nowCompleted) {
     playSound('complete');
+    setTimeout(updateWebBg, 200);
     const gains = { CLARITY: 1 };
+    // ⚡ Electric Web Mk. II — morning task bonus (before noon)
+    if (isGadgetEquipped('electric-web') && new Date().getHours() < 12) {
+      gains.CLARITY += 1;
+      setTimeout(() => showToast('⚡ Electric Web: Morning bonus +1 CLARITY!'), 500);
+    }
     // On-time bonus for non-recurring
     if (!task.recurring && task.dueDate) {
       const doneDate = new Date(task.completedAt).toISOString().slice(0,10);
@@ -9638,9 +10468,11 @@ function toggleHabit(id) {
   if (i >= 0) {
     h.history.splice(i, 1);
     playSound('tap');
+    setTimeout(updateWebBg, 200);
   } else {
     h.history.push(today); nowCompleted = true;
     playSound('complete');
+    setTimeout(updateWebBg, 200);
     // Burst from the check button
     setTimeout(() => {
       const btn = document.querySelector(`.habit-row [onclick*="${id}"]`);
@@ -9654,15 +10486,44 @@ function toggleHabit(id) {
     const gains = { FOCUS: 1 };
     // Check if completing today crossed a 7-day streak milestone
     const newStreak = habitStreak(h);
-    if (newStreak > 0 && newStreak % 7 === 0) gains.DISCIPLINE = 1;
+    if (newStreak > 0 && newStreak % 7 === 0) {
+      // 🎯 Spider-Tracer Mk. IV — doubles streak milestone bonus
+      gains.DISCIPLINE = isGadgetEquipped('spider-tracer') ? 2 : 1;
+      if (isGadgetEquipped('spider-tracer')) setTimeout(() => showToast('🎯 Spider-Tracer: Streak milestone +2 DISCIPLINE!'), 600);
+    }
     // Resilience: completing after a gap of ≥ 2 days from previous entry
     const prevDates = h.history.filter(d => d < today).sort();
     if (prevDates.length > 0) {
       const lastDate = prevDates[prevDates.length - 1];
       const gap = (new Date(today) - new Date(lastDate)) / 86400000;
-      if (gap >= 2) gains.RESILIENCE = 1;
+      if (gap >= 2) {
+        // 🖤 Symbiote Dampener — doubles comeback resilience bonus
+        gains.RESILIENCE = isGadgetEquipped('symbiote-dampener') ? 2 : 1;
+        if (isGadgetEquipped('symbiote-dampener')) setTimeout(() => showToast('🖤 Symbiote Dampener: Comeback bonus +2 RESILIENCE!'), 600);
+      }
     }
     showStatGains(gains);
+    // 🛡 Impact Web Cartridge — 4+ habits in a day burst
+    if (isGadgetEquipped('impact-web')) {
+      const doneTodayCount = (state.habits || []).filter(hx => (hx.history||[]).includes(today)).length;
+      if (doneTodayCount === 4) {
+        setTimeout(() => { showStatGains({ FOCUS: 2 }); showToast('🛡 Impact Web: 4-habit day! +2 FOCUS burst!'); }, 700);
+      }
+    }
+    // 💥 Pumpkin Bomb Override — Perfect Day (all habits done)
+    if (isGadgetEquipped('pumpkin-override')) {
+      const allDone = (state.habits || []).length > 0 && (state.habits || []).every(hx => (hx.history||[]).includes(today));
+      const alreadyFired = state.gadgets?.lastPerfectDay === today;
+      if (allDone && !alreadyFired) {
+        state.gadgets.lastPerfectDay = today;
+        saveState();
+        setTimeout(() => {
+          showStatGains({ CLARITY: 2, FOCUS: 2, DISCIPLINE: 2, RESILIENCE: 2 });
+          showToast('💥 PERFECT DAY! Pumpkin Override: +2 ALL mental stats!');
+          spawnBurst(window.innerWidth / 2, window.innerHeight * 0.4, '#aa44ff', 22);
+        }, 800);
+      }
+    }
     // Boss damage
     const _qdmg = calcBossDamage('quest');
     setTimeout(() => {
@@ -9743,6 +10604,8 @@ function renderHabits() {
       </div>
       ${habitBody}
     </div>
+
+    ${activityHeatmapHTML()}
 
     <div class="quest-section">
       <div class="quest-section-header">
@@ -9882,6 +10745,8 @@ function renderHome() {
       <h1>${greeting()}, ${escapeHtml(state.settings.userName || 'you')} 🕸</h1>
       <div class="date">${prettyToday()} · <span style="color:var(--spider-amber);font-weight:800;letter-spacing:1px">${escapeHtml(getActiveTitleName())}</span></div>
     </div>
+
+    ${homeAlertsHTML()}
 
     <div class="intention-card ${intention ? 'set' : ''}" onclick="setIntention()">
       <div class="intention-icon">✦</div>
@@ -10091,6 +10956,8 @@ function renderAnalytics() {
         </div>
       </div>
     </div>
+
+    ${weightLogHTML()}
   `;
 
   if (completedTasks > 0) renderTasksOverTime();
@@ -10614,6 +11481,10 @@ function defeatBoss(bossId) {
     ts: Date.now()
   });
 
+  // Award gadget drop
+  state.gadgets = state.gadgets || { owned: [], equipped: [] };
+  const droppedGadget = awardGadget(bossId);
+
   // Auto-unlock next boss, or start rematch if all defeated
   const nextBoss = BOSSES.find(b => b.unlock?.bossDefeated === bossId);
   if (nextBoss && !state.bossProgress[nextBoss.id]?.defeated) {
@@ -10648,6 +11519,7 @@ function showBossDefeatOverlay(boss) {
   document.getElementById('boss-defeat-name').textContent = boss.name;
   document.getElementById('boss-defeat-sub').textContent = boss.villain;
 
+  const droppedG = GADGETS.find(g => g.boss === boss.id);
   const rewardEl = document.getElementById('boss-defeat-rewards');
   rewardEl.innerHTML = `
     <div class="boss-defeat-reward-chip" style="background:${boss.color}22;color:${boss.color};border:1px solid ${boss.color}44">
@@ -10657,6 +11529,7 @@ function showBossDefeatOverlay(boss) {
       🏆 ${boss.defeat.trophy}
     </div>
     ${boss.defeat.titleId ? `<div class="boss-defeat-reward-chip" style="background:#b478e822;color:#b478e8;border:1px solid #b478e844">🏷 "${TITLES.find(t=>t.id===boss.defeat.titleId)?.name || ''}" Title</div>` : ''}
+    ${droppedG ? `<div class="boss-defeat-reward-chip" style="background:${droppedG.color}22;color:${droppedG.color};border:1px solid ${droppedG.color}44;animation:rankGlow 2s infinite">🎁 ${droppedG.icon} ${droppedG.name} — New Gadget!</div>` : ''}
   `;
   overlay.classList.add('open');
   if (window._bossDefeatTimer) clearTimeout(window._bossDefeatTimer);
@@ -11607,7 +12480,12 @@ function finishFocus(autoEnd = false) {
     state.focusSessions.push({ ts: Date.now(), taskId: focusTaskId, duration: durMin, completed: autoEnd });
     saveState();
     if (!autoEnd) showToast(`Focus session saved (${durMin}m)`);
-    if (durMin >= 15) showStatGains({ FOCUS: 1 });
+    if (durMin >= 15) {
+      // 🔬 Suspension Matrix — deep focus sessions give +2 FOCUS
+      const focusBonus = (isGadgetEquipped('suspension-matrix') && durMin >= 20) ? 2 : 1;
+      showStatGains({ FOCUS: focusBonus });
+      if (focusBonus === 2) setTimeout(() => showToast('🔬 Suspension Matrix: Deep focus +2 FOCUS!'), 400);
+    }
   }
   document.getElementById('focus-overlay').classList.remove('open');
   if (state.ui.tab === 'analytics') renderAnalytics();
@@ -11858,6 +12736,8 @@ function openLevelingHelp() {
   const sl = spiderLevelFor(xp);
   const bonuses = computeXPBonuses();
   const baseTotal = Object.values(computeStatPoints()).reduce((a, b) => a + b, 0);
+  const { rank: spRank, next: spRankNext } = getSpiderRank(xp);
+  const pts = computeStatPoints();
 
   const tierChips = STAT_TIERS.map(t => `
     <div class="lvh-tier-row">
@@ -11867,7 +12747,7 @@ function openLevelingHelp() {
     </div>
   `).join('');
 
-  const rankRows = SPIDER_LEVELS.map((r, i) => `
+  const rankRows = SPIDER_LEVELS.map(r => `
     <div class="lvh-rank-row ${sl.current.lv === r.lv ? 'current' : ''}">
       <span class="lvh-rank-lv">LV ${r.lv}</span>
       <span class="lvh-rank-title">${escapeHtml(r.title)}</span>
@@ -11875,28 +12755,64 @@ function openLevelingHelp() {
     </div>
   `).join('');
 
+  const spiderRankRows = SPIDER_RANKS.map(r => `
+    <div class="lvh-rank-row ${spRank.id === r.id ? 'current' : ''}" style="border-left:3px solid ${r.color}22">
+      <span class="lvh-rank-lv" style="color:${r.color}">${r.label}</span>
+      <span class="lvh-rank-dots"></span>
+      <span class="lvh-rank-xp">${r.minXP}+ XP</span>
+    </div>
+  `).join('');
+
+  const metaRankRows = META_GROUPS.map(g => {
+    const subtotal = g.stats.reduce((s, x) => s + (pts[x] || 0), 0);
+    const color = STAT_COLORS[g.stats[0]];
+    const tiers = META_RANK_NAMES[g.id] || [];
+    const chips = tiers.map(t => `<span style="font-size:0.6rem;padding:0.1rem 0.4rem;border-radius:3px;background:${color}18;color:${color};border:1px solid ${color}33">${t.n} <span style="opacity:0.5">${t.min}+</span></span>`).join(' → ');
+    return `
+      <div style="margin-bottom:0.55rem">
+        <div style="font-size:0.62rem;font-weight:900;letter-spacing:1px;color:${color};margin-bottom:0.3rem">${g.icon} ${g.name}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center">${chips}</div>
+      </div>
+    `;
+  }).join('');
+
+  const gadgetChips = GADGETS.map(g => `
+    <div style="display:flex;align-items:flex-start;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <span style="font-size:1rem;width:1.4rem;text-align:center;flex-shrink:0">${g.icon}</span>
+      <div>
+        <div style="font-size:0.7rem;font-weight:800;color:${g.color}">${g.name}</div>
+        <div style="font-size:0.6rem;color:var(--text-dim);line-height:1.4">${g.passive}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const ngRound = state.bossRound || 1;
+  const ngText = ngRound > 1
+    ? `You're on NG+${ngRound - 1}. Your prestige badge is shown on your profile and stat sheet.`
+    : `Complete all 6 boss fights to start NG+. Stats carry over — bosses reset and get harder.`;
+
   document.getElementById('modal-body').innerHTML = `
     <div style="padding:0.7rem 0.5rem 0.4rem;font-size:0.78rem;color:var(--text-dim);line-height:1.55">
-      Three layers of progression. The deeper you go, the slower the grind. Build something that lasts.
+      Six layers of progression. The deeper you go, the slower the grind. Build something that lasts.
     </div>
 
     <!-- Current snapshot -->
     <div class="lvh-snapshot">
       <div class="lvh-snap-row">
+        <div class="lvh-snap-pill" style="--c:${spRank.color}">
+          <div class="lvh-snap-label">SPIDER RANK</div>
+          <div class="lvh-snap-val" style="font-size:0.95rem">${spRank.label}</div>
+          <div class="lvh-snap-sub">${spRankNext ? spRankNext.minXP - xp + ' XP to ' + spRankNext.label : 'MAX RANK'}</div>
+        </div>
         <div class="lvh-snap-pill" style="--c:var(--spider-amber)">
-          <div class="lvh-snap-label">RANK</div>
+          <div class="lvh-snap-label">SPIDER LV</div>
           <div class="lvh-snap-val">LV ${sl.current.lv}</div>
           <div class="lvh-snap-sub">${sl.current.title}</div>
         </div>
         <div class="lvh-snap-pill" style="--c:#00d4ff">
           <div class="lvh-snap-label">XP</div>
           <div class="lvh-snap-val">${xp}</div>
-          <div class="lvh-snap-sub">×${bonuses.multiplier.toFixed(2)} multiplier</div>
-        </div>
-        <div class="lvh-snap-pill" style="--c:#2cd6a4">
-          <div class="lvh-snap-label">BASE</div>
-          <div class="lvh-snap-val">${baseTotal}</div>
-          <div class="lvh-snap-sub">stat points</div>
+          <div class="lvh-snap-sub">×${bonuses.multiplier.toFixed(2)} mult</div>
         </div>
       </div>
     </div>
@@ -11911,8 +12827,8 @@ function openLevelingHelp() {
         </div>
       </div>
       <div class="lvh-section-body">
-        Each stat (PUSH, PULL, FOCUS, etc.) climbs the same 8-tier ladder.
-        The first tier is quick, the last takes <strong>2500+ points</strong> in a single stat. Use the "How to earn stat points" guide to see what raises which stat.
+        Each individual stat (PUSH, PULL, FOCUS, etc.) climbs the same 8-tier ladder.
+        The first tier is quick — the last takes <strong>2500+ points</strong>. Tap "How to earn stat points" in Settings to see what actions raise which stats.
         <div class="lvh-tier-list">${tierChips}</div>
       </div>
     </div>
@@ -11927,32 +12843,62 @@ function openLevelingHelp() {
         </div>
       </div>
       <div class="lvh-section-body">
-        Base Power = everything you've earned, added up. It uses the same tier ladder. Mostly a "what's my total grind" number.
+        Base Power = every stat point added together. This feeds directly into your XP calculation. Mostly a "total grind" number — visible on Analytics.
       </div>
     </div>
 
-    <!-- Layer 3: Spider Level -->
+    <!-- Layer 3: Spider-Level -->
     <div class="lvh-section">
       <div class="lvh-section-head">
         <span class="lvh-section-num">3</span>
         <div>
-          <div class="lvh-section-title">Spider-Level (Player Rank)</div>
-          <div class="lvh-section-sub">The top-line number — your overall rank</div>
+          <div class="lvh-section-title">Spider-Level (LV 1–12)</div>
+          <div class="lvh-section-sub">Title rank based on total XP earned</div>
         </div>
       </div>
       <div class="lvh-section-body">
-        Spider-Level uses an <strong>exponential XP curve</strong> — easy at first, much harder later. 12 ranks total. You'll feel level-ups for months.
+        Spider-Level uses an <strong>exponential XP curve</strong> — easy at first, steep later. 12 levels total. Your title (Civilian → Eternal) is shown on your profile.
         <div class="lvh-rank-list">${rankRows}</div>
       </div>
     </div>
 
-    <!-- XP formula -->
+    <!-- Layer 4: Spider-Rank -->
+    <div class="lvh-section">
+      <div class="lvh-section-head">
+        <span class="lvh-section-num">4</span>
+        <div>
+          <div class="lvh-section-title">Spider-Rank (E → National)</div>
+          <div class="lvh-section-sub">Threshold badge shown on your Stat Sheet</div>
+        </div>
+      </div>
+      <div class="lvh-section-body">
+        Spider-Rank is a <strong>Solo Leveling-style gate</strong> — you cross an XP threshold and your badge upgrades. It's shown as a glowing badge on your home Stat Sheet and Profile. National-Class is the pinnacle.
+        <div class="lvh-rank-list" style="margin-top:0.6rem">${spiderRankRows}</div>
+      </div>
+    </div>
+
+    <!-- Layer 5: Meta Group Rank Names -->
+    <div class="lvh-section">
+      <div class="lvh-section-head">
+        <span class="lvh-section-num">5</span>
+        <div>
+          <div class="lvh-section-title">Meta Group Ranks</div>
+          <div class="lvh-section-sub">Per-category titles shown under each stat group</div>
+        </div>
+      </div>
+      <div class="lvh-section-body">
+        Each of the 4 meta-groups (Physical, Mental, Lifestyle, Mastery) has its own rank progression based on that group's combined stat points. These show under each cell on the home Stat Sheet.
+        <div style="margin-top:0.7rem">${metaRankRows}</div>
+      </div>
+    </div>
+
+    <!-- XP Multipliers -->
     <div class="lvh-section">
       <div class="lvh-section-head">
         <span class="lvh-section-num">⚡</span>
         <div>
           <div class="lvh-section-title">XP Multiplier Bonuses</div>
-          <div class="lvh-section-sub">Stack up to ×2 or more — speeds up Spider-Level</div>
+          <div class="lvh-section-sub">Stack up to ×2 or more — speeds up Spider-Level &amp; Spider-Rank</div>
         </div>
       </div>
       <div class="lvh-section-body">
@@ -11968,11 +12914,11 @@ function openLevelingHelp() {
           </div>
           <div class="lvh-bonus-card" style="--c:#ff5b60">
             <div class="lvh-bonus-head"><span class="lvh-bonus-name">STREAK</span><span class="lvh-bonus-val">+5% per day</span></div>
-            <div class="lvh-bonus-desc">+5% per day of your current workout streak. Capped at <strong>+50%</strong>. Miss a day → resets</div>
+            <div class="lvh-bonus-desc">+5% per day of your workout streak. Capped at <strong>+50%</strong>. Miss a day → resets</div>
           </div>
           <div class="lvh-bonus-card" style="--c:#b478e8">
             <div class="lvh-bonus-head"><span class="lvh-bonus-name">LEGACY</span><span class="lvh-bonus-val">+2% per trophy</span></div>
-            <div class="lvh-bonus-desc">+2% for every tier-up trophy you've earned. Capped at <strong>+30%</strong>. Permanent</div>
+            <div class="lvh-bonus-desc">+2% for every tier-up trophy earned. Capped at <strong>+30%</strong>. Permanent</div>
           </div>
         </div>
         <div class="lvh-formula">
@@ -11982,8 +12928,44 @@ function openLevelingHelp() {
       </div>
     </div>
 
+    <!-- Gadget Passives -->
+    <div class="lvh-section">
+      <div class="lvh-section-head">
+        <span class="lvh-section-num">🛠</span>
+        <div>
+          <div class="lvh-section-title">Gadget Passives</div>
+          <div class="lvh-section-sub">Boss drops that permanently boost stat gains</div>
+        </div>
+      </div>
+      <div class="lvh-section-body">
+        Defeat each boss in the Quests tab to unlock their gadget. Equip up to <strong>2 at a time</strong> via the Loadout button on your Profile. Each equipped gadget adds a passive bonus on qualifying actions — these bonuses are <strong>permanent once earned</strong>, even if you unequip later.
+        <div style="margin-top:0.6rem">${gadgetChips}</div>
+      </div>
+    </div>
+
+    <!-- NG+ Prestige -->
+    <div class="lvh-section">
+      <div class="lvh-section-head">
+        <span class="lvh-section-num">♾</span>
+        <div>
+          <div class="lvh-section-title">NG+ Prestige</div>
+          <div class="lvh-section-sub">New Game Plus — for those who never stop</div>
+        </div>
+      </div>
+      <div class="lvh-section-body">
+        Defeat all 6 bosses to trigger New Game Plus. Your stats <strong>carry over fully</strong> — bosses reset and scale harder. Each NG+ cycle unlocks a prestige badge on your profile: Bronze → Silver → Gold → Obsidian.
+        <div style="margin-top:0.5rem;font-size:0.7rem;color:var(--text-dim);font-style:italic">${ngText}</div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem">
+          <span class="prestige-badge prestige-bronze">⚡ NG+1</span>
+          <span class="prestige-badge prestige-silver">⚡ NG+2</span>
+          <span class="prestige-badge prestige-gold">⚡ NG+3</span>
+          <span class="prestige-badge prestige-obsidian">⚡ NG+4+</span>
+        </div>
+      </div>
+    </div>
+
     <div class="lvh-tldr">
-      <strong>TL;DR:</strong> Daily activity raises sub-stats. Variety + streaks + trophies multiply your XP. XP raises your Spider-Level rank. Long game.
+      <strong>TL;DR:</strong> Grind stats → earn XP → climb Spider-Level &amp; Spider-Rank. Defeat bosses to unlock Gadget passives. Beat all 6 to go NG+. Long game.
     </div>
   `;
   document.getElementById('modal-footer').style.display = 'none';
@@ -12306,6 +13288,9 @@ function renderStatSheetHTML() {
       animateNumber(xpEl, _lastSpiderXP, totalXP, 1000, ' XP');
       _lastSpiderXP = totalXP;
     }
+    // Stamp actual bar width so xpBarSweep keyframe exits the container cleanly
+    const xpBar = document.querySelector('.sl-xp-bar');
+    if (xpBar) xpBar.querySelector('.sl-xp-fill')?.style.setProperty('--bar-w', xpBar.offsetWidth + 'px');
   }, 40);
 
   // Each meta group has its own subtotal + tier
@@ -12378,18 +13363,20 @@ function homeStatPreviewHTML() {
   const pts = computeStatPoints();
   const xp = computeTotalXP();
   const sl = spiderLevelFor(xp);
+  const { rank, next } = getSpiderRank(xp);
+  const toNextRank = next ? (next.minXP - xp) + ' XP → ' + next.label : 'MAX RANK ★';
   // Show only group power subtotals on Home (compact). Full detail on Analytics.
   const cells = META_GROUPS.map(g => {
     const subtotal = g.stats.reduce((s, x) => s + (pts[x] || 0), 0);
-    const t = statTierFor(subtotal);
     const primary = g.stats[0];
     const color = STAT_COLORS[primary];
+    const rankName = metaRankName(g.id, subtotal);
     return `
       <div class="home-meta-cell" style="--meta-color:${color}">
         <div class="home-meta-ic">${g.icon}</div>
         <div class="home-meta-num" data-meta="${g.id}" data-target="${subtotal}">${_lastMetaSubtotals[g.id] || 0}</div>
         <div class="home-meta-name" style="background:${g.bar};-webkit-background-clip:text;background-clip:text;color:transparent">${g.name}</div>
-        <div class="home-meta-tier">${t.tier.name}</div>
+        <div class="home-meta-tier" style="color:${color}80">${rankName}</div>
       </div>
     `;
   }).join('');
@@ -12407,6 +13394,7 @@ function homeStatPreviewHTML() {
       animateNumber(xpEl, _lastHomeSpiderXP, xp, 800);
       _lastHomeSpiderXP = xp;
     }
+    updateWebBg();
   }, 30);
   return `
     <div class="home-stats-card">
@@ -12414,10 +13402,15 @@ function homeStatPreviewHTML() {
         <span class="home-stats-title">⚔ Stat Sheet</span>
         <button class="home-stats-link" onclick="switchTab('analytics')">View All →</button>
       </div>
+      <div class="home-rank-row">
+        ${spiderRankBadgeHTML(xp)}
+        ${prestigeBadgeHTML()}
+        <span style="font-size:0.58rem;color:var(--text-dim);margin-left:auto">${toNextRank}</span>
+      </div>
       <div class="home-sl-row">
         <div class="home-sl-left">
-          <div class="home-sl-rank">RANK</div>
-          <div class="home-sl-lv">LV ${sl.current.lv}</div>
+          <div class="home-sl-rank">LV</div>
+          <div class="home-sl-lv">${sl.current.lv}</div>
         </div>
         <div class="home-sl-right">
           <div class="home-sl-title">${sl.current.title}</div>
@@ -12426,6 +13419,7 @@ function homeStatPreviewHTML() {
         </div>
       </div>
       <div class="home-meta-row">${cells}</div>
+      ${equippedGadgetsRowHTML()}
     </div>
   `;
 }

@@ -6993,7 +6993,7 @@ function computeEarnedTitleIds() {
   const pts = computeStatPoints();
   const wstreak = workoutStreak();
   const trophies = (state.trophies || []).length;
-  const tasksOnTime = (state.tasks || []).filter(t => t.completed && t.completedAt && t.dueDate && new Date(t.completedAt).toISOString().slice(0,10) <= t.dueDate).length;
+  const tasksOnTime = (state.tasks || []).filter(t => t.completed && t.completedAt && t.dueDate && localISO(new Date(t.completedAt)) <= t.dueDate).length;
   const questCompletions = (state.habits || []).reduce((s, h) => s + (h.history || []).length, 0);
   const focusCount = (state.focusSessions || []).length;
 
@@ -7417,10 +7417,11 @@ function activityHeatmapHTML() {
 
 // ===== WEEKLY RECAP =====
 function _weekMonday(daysAgo) {
-  const d = new Date(Date.now() - daysAgo * 86400000);
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
   const offset = (d.getDay() + 6) % 7;
   d.setDate(d.getDate() - offset);
-  return d.toISOString().slice(0, 10);
+  return localISO(d);
 }
 
 function checkWeeklyRecap() {
@@ -7433,14 +7434,14 @@ function checkWeeklyRecap() {
 }
 
 function openWeeklyRecap(weekStart) {
-  const weekEnd = new Date(new Date(weekStart).getTime() + 6*86400000).toISOString().slice(0,10);
+  const weekEnd = localISO(new Date(new Date(weekStart).getTime() + 6*86400000));
   const tasks = state.tasks || [];
   const habits = state.habits || [];
   const log = state.log || [];
 
-  const tasksDone = tasks.filter(t => t.completed && t.completedAt && t.completedAt.slice(0,10) >= weekStart && t.completedAt.slice(0,10) <= weekEnd).length;
+  const tasksDone = tasks.filter(t => t.completed && t.completedAt && localISO(new Date(t.completedAt)) >= weekStart && localISO(new Date(t.completedAt)) <= weekEnd).length;
   const workoutDays = log.filter(e => e.date >= weekStart && e.date <= weekEnd).length;
-  const weekDays = Array.from({length:7},(_,i) => new Date(new Date(weekStart).getTime()+i*86400000).toISOString().slice(0,10));
+  const weekDays = Array.from({length:7},(_,i) => localISO(new Date(new Date(weekStart).getTime()+i*86400000)));
   const totalSlots = habits.length * 7;
   const habitsHit = habits.reduce((s,h) => s + weekDays.filter(d => (h.history||[]).includes(d)).length, 0);
   const habitPct = totalSlots > 0 ? Math.round(habitsHit/totalSlots*100) : 0;
@@ -7560,7 +7561,7 @@ function updateWebBg() {
   const tDue  = tasks.filter(isTaskDueToday).length;
   const tDone = tasks.filter(t => {
     if (t.recurring) return !!(t.completionsByDate?.[today]);
-    return t.completed && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === today;
+    return t.completed && t.completedAt && localISO(new Date(t.completedAt)) === today;
   }).length;
   const total = habits.length + tDue;
   const score = total > 0 ? Math.min(1, (hDone + tDone) / total) : 0;
@@ -9248,7 +9249,7 @@ function exportData() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'web-slinger-plan-' + new Date().toISOString().slice(0,10) + '.json';
+  a.download = 'web-slinger-plan-' + todayDate() + '.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -9313,7 +9314,13 @@ function confirmReset() {
 }
 
 // ====== UTILITIES ======
-function todayDate() { return new Date().toISOString().slice(0, 10); }
+// Always use LOCAL calendar date — never toISOString() which gives UTC
+function localISO(d) {
+  return d.getFullYear() + '-' +
+    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+    String(d.getDate()).padStart(2, '0');
+}
+function todayDate() { return localISO(new Date()); }
 function todayWeekdayName() { return WEEKDAY_FULL[new Date().getDay()]; }
 function fmtDate(iso) {
   if (!iso) return '';
@@ -9330,7 +9337,7 @@ function fmtDate(iso) {
 function daysAgoDate(n) {
   const d = new Date();
   d.setDate(d.getDate() - n);
-  return d.toISOString().slice(0, 10);
+  return localISO(d);
 }
 function prettyToday() {
   return new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -10084,7 +10091,7 @@ function toggleTaskDone(id) {
     }
     // On-time bonus for non-recurring
     if (!task.recurring && task.dueDate) {
-      const doneDate = new Date(task.completedAt).toISOString().slice(0,10);
+      const doneDate = localISO(new Date(task.completedAt));
       if (doneDate <= task.dueDate) gains.DISCIPLINE = 1;
     } else if (task.recurring) {
       gains.DISCIPLINE = 1; // recurring is always "on time"
@@ -10267,7 +10274,7 @@ function renderScheduleWeekHTML() {
   for (let i = 0; i < 7; i++) {
     const d = new Date(weekStart);
     d.setDate(weekStart.getDate() + i);
-    const iso = d.toISOString().slice(0,10);
+    const iso = localISO(d);
     const dn3 = dayNames3[i];
     const tasks = (state.tasks || []).filter(t => {
       if (t.recurring) {
@@ -10281,7 +10288,7 @@ function renderScheduleWeekHTML() {
         return (t.recurringDays || []).includes(dn3) && (t.completionsByDate && t.completionsByDate[iso]);
       }
       return t.dueDate === iso && t.completed &&
-        t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === iso;
+        t.completedAt && localISO(new Date(t.completedAt)) === iso;
     });
     days.push({
       iso, name: dayNamesFull[i],
@@ -10719,12 +10726,12 @@ function renderHome() {
   const habits = state.habits || [];
   const today = todayDate();
 
-  const todayTasks = tasks.filter(t => isTaskDueToday(t) || taskDoneToday(t) && !t.recurring && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === today);
+  const todayTasks = tasks.filter(t => isTaskDueToday(t) || taskDoneToday(t) && !t.recurring && t.completedAt && localISO(new Date(t.completedAt)) === today);
   const recurDueToday = tasks.filter(t => t.recurring && isTaskDueToday(t));
   const overdueCount = tasks.filter(isTaskOverdue).length;
   const completedToday = tasks.filter(t => {
     if (t.recurring) return !!(t.completionsByDate && t.completionsByDate[today]);
-    return t.completed && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === today;
+    return t.completed && t.completedAt && localISO(new Date(t.completedAt)) === today;
   }).length;
   const habitsDoneToday = habits.filter(h => (h.history || []).includes(today)).length;
 
@@ -10847,7 +10854,7 @@ function renderAnalytics() {
 
   // Completed this week (last 7 days)
   const weekStart = daysAgoDate(6);
-  const completedThisWeek = tasks.filter(t => t.completed && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) >= weekStart).length;
+  const completedThisWeek = tasks.filter(t => t.completed && t.completedAt && localISO(new Date(t.completedAt)) >= weekStart).length;
 
   const wstreak = workoutStreak();
   const totalHabitCompletions = habits.reduce((s, h) => s + (h.history || []).length, 0);
@@ -11029,7 +11036,7 @@ function renderTasksOverTime() {
   const tasks = state.tasks || [];
   // last 14 days
   const days = Array.from({length: 14}).map((_, i) => daysAgoDate(13 - i));
-  const counts = days.map(d => tasks.filter(t => t.completed && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === d).length);
+  const counts = days.map(d => tasks.filter(t => t.completed && t.completedAt && localISO(new Date(t.completedAt)) === d).length);
   const labels = days.map(d => { const [,m,day] = d.split('-'); return `${parseInt(m)}/${parseInt(day)}`; });
   if (tasksOverTimeChart) { tasksOverTimeChart.destroy(); tasksOverTimeChart = null; }
   const ctx = document.getElementById('tasks-canvas')?.getContext('2d');
@@ -11958,7 +11965,7 @@ function getNextMove() {
   const todaysCats = new Set();
   (state.log || []).forEach(e => { if (e.date === today) PHYSICAL_STATS.forEach(c => { if (e.cats[c]) todaysCats.add(c); }); });
   (state.tasks || []).forEach(t => {
-    const cToday = t.recurring ? (t.completionsByDate?.[today] ? today : null) : (t.completed && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === today ? today : null);
+    const cToday = t.recurring ? (t.completionsByDate?.[today] ? today : null) : (t.completed && t.completedAt && localISO(new Date(t.completedAt)) === today ? today : null);
     if (cToday) todaysCats.add('CLARITY');
   });
   (state.habits || []).forEach(h => { if ((h.history || []).includes(today)) todaysCats.add('FOCUS'); });
@@ -12130,7 +12137,7 @@ function getTodayActivities() {
       Object.entries(t.completionsByDate || {}).forEach(([d, ts]) => {
         if (d === today) acts.push({ ts, type: 'task', icon: '◇', color: '#b478e8', label: t.title, detail: 'Quest task done' });
       });
-    } else if (t.completed && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === today) {
+    } else if (t.completed && t.completedAt && localISO(new Date(t.completedAt)) === today) {
       acts.push({ ts: t.completedAt, type: 'task', icon: '◇', color: '#b478e8', label: t.title, detail: 'Task done' });
     }
   });
@@ -12146,7 +12153,7 @@ function getTodayActivities() {
 
   // Focus sessions
   (state.focusSessions || []).forEach(s => {
-    if (new Date(s.ts).toISOString().slice(0,10) === today) {
+    if (localISO(new Date(s.ts)) === today) {
       const task = s.taskId ? (state.tasks || []).find(t => t.id === s.taskId) : null;
       acts.push({ ts: s.ts, type: 'focus', icon: '◉', color: '#ff9a3c', label: task ? task.title : 'Focus session', detail: (s.duration || 0) + 'm focus' });
     }
@@ -12357,7 +12364,7 @@ function computeInsights() {
 
   // 5. Focus sessions this week
   const weekStart = daysAgoDate(6);
-  const recentFocus = (state.focusSessions || []).filter(s => new Date(s.ts).toISOString().slice(0,10) >= weekStart);
+  const recentFocus = (state.focusSessions || []).filter(s => localISO(new Date(s.ts)) >= weekStart);
   if (recentFocus.length >= 3) {
     const mins = recentFocus.reduce((sum, s) => sum + (s.duration || 0), 0);
     insights.push({
@@ -12470,7 +12477,7 @@ function updateFocusTimerDisplay() {
 
 function updateFocusStats() {
   const today = todayDate();
-  const todayCount = (state.focusSessions || []).filter(s => new Date(s.ts).toISOString().slice(0,10) === today).length;
+  const todayCount = (state.focusSessions || []).filter(s => localISO(new Date(s.ts)) === today).length;
   document.getElementById('focus-stats').textContent = `${todayCount} session${todayCount === 1 ? '' : 's'} today`;
 }
 
@@ -13151,7 +13158,7 @@ function computeStatPoints() {
     if (t.recurring) {
       pts.DISCIPLINE += Object.keys(t.completionsByDate || {}).length;
     } else if (t.completed && t.completedAt && t.dueDate) {
-      const doneDate = new Date(t.completedAt).toISOString().slice(0,10);
+      const doneDate = localISO(new Date(t.completedAt));
       if (doneDate <= t.dueDate) pts.DISCIPLINE += 1;
     }
   });
@@ -13184,9 +13191,9 @@ function computeStatPoints() {
   (state.habits || []).forEach(h => (h.history || []).forEach(d => addAct(d, 'FOCUS')));
   (state.tasks || []).forEach(t => {
     if (t.recurring) Object.keys(t.completionsByDate || {}).forEach(d => addAct(d, 'CLARITY'));
-    else if (t.completed && t.completedAt) addAct(new Date(t.completedAt).toISOString().slice(0,10), 'CLARITY');
+    else if (t.completed && t.completedAt) addAct(localISO(new Date(t.completedAt)), 'CLARITY');
   });
-  (state.focusSessions || []).forEach(s => { if ((s.duration || 0) >= 15) addAct(new Date(s.ts).toISOString().slice(0,10), 'FOCUS'); });
+  (state.focusSessions || []).forEach(s => { if ((s.duration || 0) >= 15) addAct(localISO(new Date(s.ts)), 'FOCUS'); });
 
   // RECOVERY — +1 per planned rest day that you also did at least 1 task/quest on
   Object.keys(dateActivities).forEach(date => {
